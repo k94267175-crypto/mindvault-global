@@ -3,111 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mind Vault Global | Business Ideas Marketplace & Freelancing Pakistan</title>
-
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Pakistan's first idea marketplace. Submit your business ideas, hire low-cost freelancers from Pakistan. Mind Vault Global connects entrepreneurs with companies worldwide. JazzCash & Western Union payments accepted.">
-    <meta name="keywords" content="business ideas marketplace Pakistan, cheap freelancing Pakistan, Abbottabad freelancer, sell business ideas online, low cost logo design Pakistan, idea vault, Pakistani freelancer hire, earn dollars from Pakistan">
-    <meta name="author" content="Mind Vault Global">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://mindvaultglobal.com/">
-
-    <!-- Open Graph (Facebook / WhatsApp preview) -->
-    <meta property="og:title" content="Mind Vault Global | Ideas + Freelancing Platform">
-    <meta property="og:description" content="Pakistan's first idea marketplace. Submit ideas, hire affordable freelancers, earn dollars from home.">
-    <meta property="og:url" content="https://mindvaultglobal.com/">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Mind Vault Global | Ideas + Freelancing">
-    <meta name="twitter:description" content="Low-cost freelancing and business idea marketplace from Pakistan to the world.">
+    <title>Mind Vault Global | AI Innovation & Business Marketplace</title>
 
     <style>
-        :root { --main-blue: #1a2a6c; --gold: #fdbb2d; --light-bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--light-bg); line-height: 1.6; color: #333; }
+        :root { --main-blue: #1a2a6c; --gold: #fdbb2d; --light-bg: #f8f9fa; --ai-purple: #6c5ce7; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--light-bg); color: #333; line-height: 1.6; }
+        
         header { background: linear-gradient(135deg, #1a2a6c, #2a48ad); color: white; padding: 60px 20px; text-align: center; }
-        nav { background: white; padding: 15px; position: sticky; top: 0; display: flex; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000; }
-        nav a { margin: 0 15px; text-decoration: none; color: var(--main-blue); font-weight: bold; font-size: 14px; text-transform: uppercase; }
-        .main-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-top: 5px solid var(--main-blue); }
-        .card h2 { color: var(--main-blue); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
-        textarea, input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
-        button { background: var(--main-blue); color: white; border: none; padding: 15px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        .logo-img { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--gold); margin-bottom: 15px; background: white; display: inline-block; object-fit: cover; }
+        
+        nav { background: white; padding: 15px; position: sticky; top: 0; display: flex; justify-content: center; flex-wrap: wrap; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000; }
+        nav a { margin: 5px 15px; text-decoration: none; color: var(--main-blue); font-weight: bold; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .main-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        
+        /* Advertisement Slots */
+        .ad-space { background: #f1f1f1; border: 1px dashed #bbb; color: #888; text-align: center; padding: 15px; margin: 10px 0; border-radius: 8px; font-size: 11px; }
+        
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--main-blue); }
+        .ai-card { border-top: 5px solid var(--ai-purple); grid-column: 1 / -1; }
+        
+        iframe { width: 100%; border-radius: 10px; border: none; background: white; min-height: 450px; }
+        
+        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background: var(--main-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
         button:hover { background: #2a48ad; transform: translateY(-2px); }
-        .item { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-        .price { color: #28a745; font-weight: bold; display: block; margin: 5px 0; }
-        footer { text-align: center; padding: 40px; color: #777; font-size: 13px; }
-        .legal-links { text-align: center; font-size: 11px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
-        .legal-links a { color: #888; text-decoration: none; margin: 0 10px; }
-        .legal-links a:hover { text-decoration: underline; }
+
+        .whatsapp-float { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; text-align: center; font-size: 30px; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+        footer { text-align: center; padding: 40px; color: #777; font-size: 13px; border-top: 1px solid #eee; margin-top: 50px; }
     </style>
 </head>
 <body>
 
+<a href="https://wa.me/923000000000" class="whatsapp-float" target="_blank" title="Contact Support">💬</a>
+
 <nav>
-    <a href="#vault">Idea Vault</a>
-    <a href="#gigs">Featured Gigs</a>
-    <a href="#jobs">Remote Jobs</a>
+    <a href="#ai-lab">AI Lab</a>
+    <a href="#vault">Submit Project</a>
+    <a href="#board">Community Board</a>
+    <a href="#payments">Payments</a>
 </nav>
 
 <header>
+    <img src="./logo.jpeg" alt="Mind Vault Global Logo" class="logo-img" onerror="this.style.display='none'">
     <h1>MIND VAULT GLOBAL</h1>
-    <p>Secure Your Innovation. Connect with Global Opportunities.</p>
+    <p>Empowering Innovation | AI Solutions & Global Business Hub 🌍</p>
 </header>
 
+<div class="main-container" style="margin-bottom: 0;">
+    <div class="ad-space" style="grid-column: 1 / -1;">
+        ADVERTISEMENT SPACE (RESERVED)
+    </div>
+</div>
+
 <div class="main-container">
-    
+
+    <div class="card ai-card" id="ai-lab">
+        <h2>🤖 Free AI Innovation Lab</h2>
+        <p style="font-size: 14px; margin-bottom: 20px; color: #666;">
+            Access high-performance AI models for free. If a tool reaches capacity, please wait 60 seconds and refresh the page.
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div>
+                <h4>💬 Intelligent AI Chat</h4>
+                <iframe src="https://hef-mistral-7b-instruct.hf.space"></iframe>
+            </div>
+            <div>
+                <h4>🎨 High-Resolution Image Generator</h4>
+                <iframe src="https://black-forest-labs-flux-1-schnell.hf.space"></iframe>
+            </div>
+        </div>
+    </div>
+
     <div class="card" id="vault">
-        <h2>💡 Idea Vault</h2>
-        <p>Submit your idea. Our system will notify our team for professional review.</p>
+        <h2>💡 Project & Idea Vault</h2>
+        <p style="font-size: 12px; color: #d63031; font-weight: bold; margin-bottom: 15px;">
+            TERMS OF SERVICE: Mind Vault Global is a platform provider only. Business agreements, negotiations, and payments are conducted directly between users. We are not liable for any third-party transactions.
+        </p>
         
         <form action="https://formspree.io/f/xyklppkl" method="POST">
-            <label style="font-size: 14px; color: #555;">Your Innovation Idea:</label>
-            <textarea name="IdeaDescription" rows="5" placeholder="Write your idea in detail..." required></textarea>
+            <input type="email" name="_replyto" placeholder="Professional Email Address" required>
+            <input type="text" name="Contact_Details" placeholder="WhatsApp Number or LinkedIn URL" required>
+            <textarea name="Project_Details" rows="6" placeholder="Describe your business idea, service requirements, or project details..." required></textarea>
             
-            <label style="font-size: 14px; color: #555;">Your Contact Email:</label>
-            <input type="email" name="Email" placeholder="example@email.com" required>
-            
-            <button type="submit">Secure & Submit My Idea</button>
+            <label style="font-size: 12px; color: #666;">Privacy Preference:</label>
+            <select name="Privacy_Setting">
+                <option value="Confidential">Private (Submit to Admin Only)</option>
+                <option value="Public">Public (Display on Community Board for Exposure)</option>
+            </select>
+
+            <button type="submit">🚀 Submit for Global Connection</button>
         </form>
     </div>
 
-    <div class="card" id="gigs">
-        <h2>🛠️ Global Gigs</h2>
-        <div class="item">
-            <h4>Professional Content Strategy</h4>
-            <span class="price">Starting from $15.00</span>
-            <p style="font-size: 12px; color: #666;">SEO optimized blog posts and scripts.</p>
-        </div>
-        <div class="item">
-            <h4>Visual Branding Kit</h4>
-            <span class="price">Starting from $25.00</span>
-            <p style="font-size: 12px; color: #666;">Logos and social media templates.</p>
-        </div>
+    <div class="ad-space">
+        AFFILIATE PARTNER PROMOTIONS
     </div>
 
-    <div class="card" id="jobs">
-        <h2>💼 Remote Careers</h2>
-        <div class="item">
-            <h4>Digital Assistant</h4>
-            <p style="font-size: 13px; font-weight: bold;">Full-time | Remote</p>
-            <span class="price">$600 - $900 / Month</span>
-        </div>
+    <div class="card" id="board" style="grid-column: 1 / -1;">
+        <h2>📢 Community Bulletin Board</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 10px;">Collaborate, discuss, and find talent in real-time. Feel free to share your professional links below.</p>
+        <iframe src="https://www3.cbox.ws/box/?boxid=3534571&boxtag=v8m3p5" style="min-height: 450px;"></iframe>
     </div>
 
-</div>
+    <div class="card" id="payments" style="grid-column: 1 / -1; text-align: center; background: #eef2f7; border-top: 5px solid #2ecc71;">
+        <h2>💳 Global & Local Payment Support</h2>
+        <p>We facilitate professional transactions through: <br>
+        <strong>Payoneer | JazzCash | EasyPaisa | Western Union | Direct Bank Transfer</strong></p>
+    </div>
 
-<div class="legal-links">
-    <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
-    <p style="color: #999; padding: 10px; max-width: 600px; margin: 0 auto;">
-        We value your privacy. Ideas submitted are encrypted and used only for professional review. 
-        Mind Vault ensures your data remains confidential.
-    </p>
 </div>
 
 <footer>
-    &copy; 2026 Mind Vault Global Platform | Designed for Global Creators.
+    <p>&copy; 2026 Mind Vault Global | Pakistan 🇵🇰</p>
+    <p style="font-size: 11px; opacity: 0.8;">Connecting Innovation with Opportunity Worldwide.</p>
 </footer>
 
 </body>
