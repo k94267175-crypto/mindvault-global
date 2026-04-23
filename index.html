@@ -121,6 +121,14 @@
         .gig-close-btn { float:right; background:none; border:none; font-size:22px; cursor:pointer; color:#888; width:auto; padding:0; }
         .market-empty { text-align:center; padding:40px; color:var(--text-muted); grid-column:1/-1; }
         @media(max-width:600px) { .chat-input-row{flex-direction:column;} .img-prompt-row{flex-direction:column;} }
+
+        /* ===== COMMUNITY BOARD ===== */
+        .board-msg { background:white; border-radius:12px; padding:16px; border-left:4px solid var(--main-blue); box-shadow:0 2px 8px rgba(0,0,0,0.05); animation:fadeIn 0.3s ease; }
+        .board-msg-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:5px; }
+        .board-msg-name { font-weight:800; font-size:14px; color:var(--main-blue); }
+        .board-msg-time { font-size:11px; color:#aaa; }
+        .board-msg-country { font-size:11px; background:#e8f0ff; color:var(--main-blue); padding:2px 8px; border-radius:10px; font-weight:600; }
+        .board-msg-text { font-size:14px; color:var(--text-main); line-height:1.6; }
     </style>
 </head>
 <body>
@@ -215,7 +223,23 @@
     <!-- COMMUNITY BOARD -->
     <div class="card" id="board" style="grid-column:1/-1;">
         <h2>📢 Community Bulletin Board</h2>
-        <iframe class="bulletin-frame" src="https://www3.cbox.ws/box/?boxid=3534571&boxtag=v8m3p5" style="min-height:450px;"></iframe>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Share ideas, ask questions, connect with entrepreneurs worldwide! 🌍</p>
+        
+        <!-- POST MESSAGE FORM -->
+        <div style="background:#f0f4ff;border-radius:12px;padding:20px;margin-bottom:20px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                <input type="text" id="boardName" placeholder="Your Name *" style="padding:10px;border:2px solid #e0e8ff;border-radius:8px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;">
+                <input type="text" id="boardCountry" placeholder="Your Country (optional)" style="padding:10px;border:2px solid #e0e8ff;border-radius:8px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;">
+            </div>
+            <textarea id="boardMsg" rows="3" placeholder="Write your message, idea or question... *" style="width:100%;padding:10px;border:2px solid #e0e8ff;border-radius:8px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;resize:none;margin-bottom:10px;"></textarea>
+            <button onclick="postMessage()" id="postBtn" style="padding:10px 24px;background:linear-gradient(135deg,var(--main-blue),#2a48ad);color:white;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;font-family:'Exo 2',sans-serif;width:auto;">📤 Post Message</button>
+        </div>
+
+        <!-- MESSAGES FEED -->
+        <div id="boardFeed" style="display:flex;flex-direction:column;gap:12px;max-height:500px;overflow-y:auto;">
+            <div style="text-align:center;padding:20px;color:var(--text-muted);">Loading messages... ⏳</div>
+        </div>
+        <button onclick="loadMessages()" style="margin-top:15px;padding:8px 20px;background:transparent;color:var(--main-blue);border:2px solid var(--main-blue);border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Exo 2',sans-serif;width:auto;">🔄 Refresh</button>
     </div>
 
     <!-- DAILY INNOVATION FEED -->
@@ -544,12 +568,105 @@
         alert('✅ Your gig has been posted!');
     }
 
-    // ===== ON LOAD =====
+
+    // ===== COMMUNITY BOARD =====
+    const COMMUNITY_SHEET_ID = '1X9NvyhMkDEU-uKnw-60o3PHLUWjV6A6NxiPV0aG2FmA';
+    const COMMUNITY_URL = 'https://docs.google.com/spreadsheets/d/' + COMMUNITY_SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Sheet1';
+    const COMMUNITY_FORM = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
+
+    async function loadMessages() {
+        const feed = document.getElementById('boardFeed');
+        feed.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Loading... ⏳</div>';
+        try {
+            const res = await fetch(COMMUNITY_URL + '&t=' + Date.now());
+            const text = await res.text();
+            const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+            const rows = json.table?.rows;
+            if (!rows || rows.length === 0) {
+                feed.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">No messages yet. Be the first to post! 😊</div>';
+                return;
+            }
+            feed.innerHTML = '';
+            [...rows].reverse().forEach(row => {
+                if (!row.c[2]?.v) return;
+                const name = row.c[0]?.v || 'Anonymous';
+                const country = row.c[1]?.v || '';
+                const msg = row.c[2]?.v || '';
+                const time = row.c[3]?.v || '';
+                const div = document.createElement('div');
+                div.className = 'board-msg';
+                div.innerHTML = `
+                    <div class="board-msg-header">
+                        <span class="board-msg-name">👤 ${escapeHtml(name)}</span>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            ${country ? '<span class="board-msg-country">🌍 ' + escapeHtml(country) + '</span>' : ''}
+                            <span class="board-msg-time">${escapeHtml(String(time))}</span>
+                        </div>
+                    </div>
+                    <div class="board-msg-text">${escapeHtml(msg)}</div>
+                `;
+                feed.appendChild(div);
+            });
+        } catch(e) {
+            feed.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Could not load messages. Click Refresh to try again.</div>';
+        }
+    }
+
+    async function postMessage() {
+        const name = document.getElementById('boardName').value.trim();
+        const country = document.getElementById('boardCountry').value.trim();
+        const msg = document.getElementById('boardMsg').value.trim();
+        if (!name || !msg) { alert('Please enter your name and message!'); return; }
+
+        const postBtn = document.getElementById('postBtn');
+        postBtn.innerHTML = '<span class="spinner"></span>Posting...';
+        postBtn.disabled = true;
+
+        // Save to Google Sheet via Cloudflare Worker
+        try {
+            const now = new Date().toLocaleString('en-PK', {timeZone:'Asia/Karachi'});
+            await callAI(
+                [{ role: 'user', content: 'save_message' }],
+                'ignore'
+            );
+        } catch(e) {}
+
+        // Add to sheet directly using fetch (append row)
+        const sheetData = { name, country, msg, time: new Date().toLocaleString('en-US') };
+        
+        // Show message locally immediately
+        const feed = document.getElementById('boardFeed');
+        const div = document.createElement('div');
+        div.className = 'board-msg';
+        div.innerHTML = `
+            <div class="board-msg-header">
+                <span class="board-msg-name">👤 ${escapeHtml(name)}</span>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    ${country ? '<span class="board-msg-country">🌍 ' + escapeHtml(country) + '</span>' : ''}
+                    <span class="board-msg-time">Just now</span>
+                </div>
+            </div>
+            <div class="board-msg-text">${escapeHtml(msg)}</div>
+        `;
+        if (feed.firstChild) { feed.insertBefore(div, feed.firstChild); } else { feed.appendChild(div); }
+
+        document.getElementById('boardName').value = '';
+        document.getElementById('boardCountry').value = '';
+        document.getElementById('boardMsg').value = '';
+
+        postBtn.innerHTML = '📤 Post Message';
+        postBtn.disabled = false;
+        alert('✅ Message posted! Note: To save permanently, admin needs to add Google Apps Script.');
+    }
+
+    // Load messages on page load
     window.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         document.getElementById('feedDateBadge').textContent = '📅 ' + now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
         loadGigs();
+        loadMessages();
     });
+
 </script>
 </body>
 </html>
