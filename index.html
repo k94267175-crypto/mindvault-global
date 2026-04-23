@@ -5,804 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mind Vault Global | AI Hub & Business Marketplace</title>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5CWZLH3H6H">
-    function escapeHtml(text) {
-        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-    }
-
-    // ===== GIG MARKETPLACE =====
-    const SHEET_ID = '1YwKvlmI5DvPMBE-u9of9WPXAT57SLFWSrZDEsCuzvMs';
-    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Gigs`;
-    const FORM_URL = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
-
-    let allGigs = [];
-    let currentFilter = 'All';
-
-    // Load gigs from Google Sheet
-    async function loadGigs() {
-        const grid = document.getElementById('gigGrid');
-        try {
-            const res = await fetch(SHEET_URL);
-            const text = await res.text();
-            const json = JSON.parse(text.match(/google.visualization.Query.setResponse\((.*)\)/s)[1]);
-            const rows = json.table.rows;
-
-            if (!rows || rows.length === 0) {
-                showSampleGigs();
-                return;
-            }
-
-            allGigs = rows.map(row => ({
-                name: row.c[0]?.v || '',
-                category: row.c[1]?.v || 'Other',
-                title: row.c[2]?.v || '',
-                desc: row.c[3]?.v || '',
-                rate: row.c[4]?.v || '',
-                contact: row.c[5]?.v || '',
-                approved: row.c[6]?.v || 'Yes'
-            })).filter(g => g.approved === 'Yes' && g.title);
-
-            if (allGigs.length === 0) {
-                showSampleGigs();
-            } else {
-                renderGigs(allGigs);
-            }
-        } catch(e) {
-            showSampleGigs();
-        }
-    }
-
-    function showSampleGigs() {
-        allGigs = [
-            { name: 'Ahmed K.', category: 'Web Development', title: 'I will build your professional website', desc: 'Full stack web development using HTML, CSS, JavaScript and modern frameworks. Fast delivery guaranteed.', rate: '$30/page', contact: 'Contact via platform' },
-            { name: 'Sara M.', category: 'Graphic Design', title: 'I will design stunning logos and branding', desc: 'Professional logo design, brand identity, business cards and social media graphics. Unlimited revisions.', rate: '$15/logo', contact: 'Contact via platform' },
-            { name: 'Ali R.', category: 'Content Writing', title: 'I will write SEO blog articles', desc: 'High quality, plagiarism-free articles optimized for Google. English and Urdu content available.', rate: '$8/article', contact: 'Contact via platform' },
-            { name: 'Fatima H.', category: 'Digital Marketing', title: 'I will manage your social media pages', desc: 'Complete social media management including content creation, posting schedule and audience growth strategy.', rate: '$50/month', contact: 'Contact via platform' },
-            { name: 'Usman T.', category: 'Video Editing', title: 'I will edit your YouTube videos professionally', desc: 'Professional video editing with transitions, color grading, subtitles and thumbnail design included.', rate: '$20/video', contact: 'Contact via platform' },
-            { name: 'Zara B.', category: 'AI Services', title: 'I will create AI powered chatbots for your business', desc: 'Custom AI chatbot development for websites and WhatsApp. Automate customer support and lead generation.', rate: '$100/bot', contact: 'Contact via platform' }
-        ];
-        renderGigs(allGigs);
-    }
-
-    function renderGigs(gigs) {
-        const grid = document.getElementById('gigGrid');
-        const filtered = currentFilter === 'All' ? gigs : gigs.filter(g => g.category === currentFilter);
-
-        if (filtered.length === 0) {
-            grid.innerHTML = '<div class="market-empty"><span style="font-size:40px">😔</span><br>No gigs in this category yet.<br><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:15px">Be the first to post!</button></div>';
-            return;
-        }
-
-        const emojis = {'Web Development':'💻','Graphic Design':'🎨','Content Writing':'✍️','Digital Marketing':'📱','Video Editing':'🎬','Data Entry':'📊','AI Services':'🤖','Other':'⚡'};
-
-        grid.innerHTML = filtered.map(g => `
-            <div class="gig-card">
-                <div class="gig-category">${emojis[g.category] || '⚡'} ${escapeHtml(g.category)}</div>
-                <div class="gig-title">${escapeHtml(g.title)}</div>
-                <div class="gig-seller">👤 ${escapeHtml(g.name)}</div>
-                <div class="gig-desc">${escapeHtml(g.desc)}</div>
-                <div class="gig-footer">
-                    <span class="gig-rate">💰 ${escapeHtml(g.rate)}</span>
-                    <a class="gig-contact" href="mailto:${escapeHtml(g.contact)}" onclick="handleContact(event, '${escapeHtml(g.contact)}')">Contact ➤</a>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function handleContact(e, contact) {
-        if (contact === 'Contact via platform') {
-            e.preventDefault();
-            alert('Please use the Community Board to contact this freelancer!');
-        }
-    }
-
-    function filterGigs(btn, category) {
-        document.querySelectorAll('.market-tab').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = category;
-        renderGigs(allGigs);
-    }
-
-    function openGigForm() {
-        document.getElementById('gigFormOverlay').classList.add('visible');
-    }
-
-    function closeGigForm() {
-        document.getElementById('gigFormOverlay').classList.remove('visible');
-    }
-
-    async function submitGig() {
-        const name = document.getElementById('gigName').value.trim();
-        const category = document.getElementById('gigCategory').value;
-        const title = document.getElementById('gigTitle').value.trim();
-        const desc = document.getElementById('gigDesc').value.trim();
-        const rate = document.getElementById('gigRate').value.trim();
-        const contact = document.getElementById('gigContact').value.trim();
-
-        if (!name || !title || !desc || !rate || !contact) {
-            alert('Please fill all fields!');
-            return;
-        }
-
-        // Add to local display immediately
-        const newGig = { name, category, title, desc, rate, contact };
-        allGigs.unshift(newGig);
-        renderGigs(allGigs);
-        closeGigForm();
-
-        // Clear form
-        ['gigName','gigTitle','gigDesc','gigRate','gigContact'].forEach(id => document.getElementById(id).value = '');
-
-        alert('✅ Your gig has been posted! It will appear in the marketplace after admin approval.');
-    }
-
-    // Load gigs on page load
-    window.addEventListener('DOMContentLoaded', () => {
-        loadGigs();
-    });
-
-</script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-5CWZLH3H6H');
-
-    function escapeHtml(text) {
-        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-    }
-
-    // ===== GIG MARKETPLACE =====
-    const SHEET_ID = '1YwKvlmI5DvPMBE-u9of9WPXAT57SLFWSrZDEsCuzvMs';
-    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Gigs`;
-    const FORM_URL = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
-
-    allGigs = [];
-    currentFilter = 'All';
-
-    // Load gigs from Google Sheet
-    async function loadGigs() {
-        const grid = document.getElementById('gigGrid');
-        try {
-            const res = await fetch(SHEET_URL);
-            const text = await res.text();
-            const json = JSON.parse(text.match(/google.visualization.Query.setResponse\((.*)\)/s)[1]);
-            const rows = json.table.rows;
-
-            if (!rows || rows.length === 0) {
-                showSampleGigs();
-                return;
-            }
-
-            allGigs = rows.map(row => ({
-                name: row.c[0]?.v || '',
-                category: row.c[1]?.v || 'Other',
-                title: row.c[2]?.v || '',
-                desc: row.c[3]?.v || '',
-                rate: row.c[4]?.v || '',
-                contact: row.c[5]?.v || '',
-                approved: row.c[6]?.v || 'Yes'
-            })).filter(g => g.approved === 'Yes' && g.title);
-
-            if (allGigs.length === 0) {
-                showSampleGigs();
-            } else {
-                renderGigs(allGigs);
-            }
-        } catch(e) {
-            showSampleGigs();
-        }
-    }
-
-    function showSampleGigs() {
-        allGigs = [
-            { name: 'Ahmed K.', category: 'Web Development', title: 'I will build your professional website', desc: 'Full stack web development using HTML, CSS, JavaScript and modern frameworks. Fast delivery guaranteed.', rate: '$30/page', contact: 'Contact via platform' },
-            { name: 'Sara M.', category: 'Graphic Design', title: 'I will design stunning logos and branding', desc: 'Professional logo design, brand identity, business cards and social media graphics. Unlimited revisions.', rate: '$15/logo', contact: 'Contact via platform' },
-            { name: 'Ali R.', category: 'Content Writing', title: 'I will write SEO blog articles', desc: 'High quality, plagiarism-free articles optimized for Google. English and Urdu content available.', rate: '$8/article', contact: 'Contact via platform' },
-            { name: 'Fatima H.', category: 'Digital Marketing', title: 'I will manage your social media pages', desc: 'Complete social media management including content creation, posting schedule and audience growth strategy.', rate: '$50/month', contact: 'Contact via platform' },
-            { name: 'Usman T.', category: 'Video Editing', title: 'I will edit your YouTube videos professionally', desc: 'Professional video editing with transitions, color grading, subtitles and thumbnail design included.', rate: '$20/video', contact: 'Contact via platform' },
-            { name: 'Zara B.', category: 'AI Services', title: 'I will create AI powered chatbots for your business', desc: 'Custom AI chatbot development for websites and WhatsApp. Automate customer support and lead generation.', rate: '$100/bot', contact: 'Contact via platform' }
-        ];
-        renderGigs(allGigs);
-    }
-
-    function renderGigs(gigs) {
-        const grid = document.getElementById('gigGrid');
-        const filtered = currentFilter === 'All' ? gigs : gigs.filter(g => g.category === currentFilter);
-
-        if (filtered.length === 0) {
-            grid.innerHTML = '<div class="market-empty"><span style="font-size:40px">😔</span><br>No gigs in this category yet.<br><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:15px">Be the first to post!</button></div>';
-            return;
-        }
-
-        const emojis = {'Web Development':'💻','Graphic Design':'🎨','Content Writing':'✍️','Digital Marketing':'📱','Video Editing':'🎬','Data Entry':'📊','AI Services':'🤖','Other':'⚡'};
-
-        grid.innerHTML = filtered.map(g => `
-            <div class="gig-card">
-                <div class="gig-category">${emojis[g.category] || '⚡'} ${escapeHtml(g.category)}</div>
-                <div class="gig-title">${escapeHtml(g.title)}</div>
-                <div class="gig-seller">👤 ${escapeHtml(g.name)}</div>
-                <div class="gig-desc">${escapeHtml(g.desc)}</div>
-                <div class="gig-footer">
-                    <span class="gig-rate">💰 ${escapeHtml(g.rate)}</span>
-                    <a class="gig-contact" href="mailto:${escapeHtml(g.contact)}" onclick="handleContact(event, '${escapeHtml(g.contact)}')">Contact ➤</a>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function handleContact(e, contact) {
-        if (contact === 'Contact via platform') {
-            e.preventDefault();
-            alert('Please use the Community Board to contact this freelancer!');
-        }
-    }
-
-    function filterGigs(btn, category) {
-        document.querySelectorAll('.market-tab').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = category;
-        renderGigs(allGigs);
-    }
-
-    function openGigForm() {
-        document.getElementById('gigFormOverlay').classList.add('visible');
-    }
-
-    function closeGigForm() {
-        document.getElementById('gigFormOverlay').classList.remove('visible');
-    }
-
-    async function submitGig() {
-        const name = document.getElementById('gigName').value.trim();
-        const category = document.getElementById('gigCategory').value;
-        const title = document.getElementById('gigTitle').value.trim();
-        const desc = document.getElementById('gigDesc').value.trim();
-        const rate = document.getElementById('gigRate').value.trim();
-        const contact = document.getElementById('gigContact').value.trim();
-
-        if (!name || !title || !desc || !rate || !contact) {
-            alert('Please fill all fields!');
-            return;
-        }
-
-        // Add to local display immediately
-        const newGig = { name, category, title, desc, rate, contact };
-        allGigs.unshift(newGig);
-        renderGigs(allGigs);
-        closeGigForm();
-
-        // Clear form
-        ['gigName','gigTitle','gigDesc','gigRate','gigContact'].forEach(id => document.getElementById(id).value = '');
-
-        alert('✅ Your gig has been posted! It will appear in the marketplace after admin approval.');
-    }
-
-    // Load gigs on page load
-    window.addEventListener('DOMContentLoaded', () => {
-        loadGigs();
-    });
-
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CWZLH3H6H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5CWZLH3H6H');
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --main-blue: #1a2a6c;
-            --deep-blue: #0d1a4a;
-            --gold: #fdbb2d;
-            --gold-dark: #e0a020;
-            --ai-purple: #6c5ce7;
-            --ai-cyan: #00cec9;
-            --light-bg: #f0f4ff;
-            --card-bg: #ffffff;
-            --text-main: #1a1a2e;
-            --text-muted: #666;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Exo 2', sans-serif;
-            background: var(--light-bg);
-            color: var(--text-main);
-            line-height: 1.6;
-        }
-
-        /* ===== HEADER ===== */
-        header {
-            background: linear-gradient(135deg, #0d1a4a 0%, #1a2a6c 50%, #2a48ad 100%);
-            color: white;
-            padding: 60px 20px 50px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 50%, rgba(108,92,231,0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 30%, rgba(253,187,45,0.08) 0%, transparent 40%);
-            animation: bgPulse 8s ease-in-out infinite alternate;
-        }
-        @keyframes bgPulse {
-            0% { transform: scale(1) rotate(0deg); }
-            100% { transform: scale(1.1) rotate(5deg); }
-        }
-        .logo-circle {
-            width: 90px; height: 90px;
-            background: white;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid var(--gold);
-            margin-bottom: 15px;
-            box-shadow: 0 0 30px rgba(253,187,45,0.4);
-            position: relative;
-            z-index: 1;
-            animation: logoGlow 3s ease-in-out infinite alternate;
-        }
-        @keyframes logoGlow {
-            0% { box-shadow: 0 0 20px rgba(253,187,45,0.3); }
-            100% { box-shadow: 0 0 40px rgba(253,187,45,0.7); }
-        }
-        .logo-text { color: var(--main-blue); font-weight: 900; font-size: 22px; font-family: 'Space Mono', monospace; }
-        header h1 {
-            font-size: clamp(24px, 5vw, 42px);
-            font-weight: 900;
-            letter-spacing: 3px;
-            color: white;
-            position: relative;
-            z-index: 1;
-        }
-        header p {
-            opacity: 0.85;
-            font-size: 16px;
-            margin-top: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ===== STATS ===== */
-        .stats-bar {
-            background: #0d1a4a;
-            color: white;
-            padding: 35px 20px;
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            text-align: center;
-        }
-        .stat-item { margin: 10px; min-width: 130px; }
-        .stat-number {
-            font-size: 36px;
-            font-weight: 900;
-            color: var(--gold);
-            display: block;
-            font-family: 'Space Mono', monospace;
-        }
-        .stat-label { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1.5px; }
-
-        /* ===== NAV ===== */
-        nav {
-            background: white;
-            padding: 14px 20px;
-            position: sticky;
-            top: 0;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 5px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-        nav a {
-            margin: 4px 12px;
-            text-decoration: none;
-            color: var(--main-blue);
-            font-weight: 700;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        nav a:hover { background: var(--main-blue); color: white; }
-
-        /* ===== MAIN LAYOUT ===== */
-        .main-container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        /* ===== CARDS ===== */
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 28px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
-            border-top: 5px solid var(--main-blue);
-        }
-        .ai-card {
-            border-top: 5px solid var(--ai-purple);
-            grid-column: 1 / -1;
-        }
-        .card h2 {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            color: var(--text-main);
-        }
-
-        /* ===== AI LAB ===== */
-        .ai-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .ai-tab {
-            padding: 10px 22px;
-            border-radius: 30px;
-            border: 2px solid var(--ai-purple);
-            background: transparent;
-            color: var(--ai-purple);
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Exo 2', sans-serif;
-        }
-        .ai-tab.active, .ai-tab:hover {
-            background: var(--ai-purple);
-            color: white;
-        }
-
-        /* ===== CHAT UI ===== */
-        #chat-panel, #image-panel { display: none; }
-        #chat-panel.visible, #image-panel.visible { display: block; }
-
-        .chat-box {
-            height: 400px;
-            overflow-y: auto;
-            background: #f8f7ff;
-            border: 2px solid #e8e4ff;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 14px;
-            scroll-behavior: smooth;
-        }
-        .msg {
-            margin-bottom: 14px;
-            display: flex;
-            flex-direction: column;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .msg.user { align-items: flex-end; }
-        .msg.ai { align-items: flex-start; }
-        .msg-bubble {
-            max-width: 80%;
-            padding: 11px 16px;
-            border-radius: 16px;
-            font-size: 14px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-        .msg.user .msg-bubble {
-            background: linear-gradient(135deg, var(--main-blue), #2a48ad);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        .msg.ai .msg-bubble {
-            background: white;
-            border: 1.5px solid #e0dbff;
-            color: var(--text-main);
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 8px rgba(108,92,231,0.08);
-        }
-        .msg-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        .chat-input-row {
-            display: flex;
-            gap: 10px;
-        }
-        .chat-input-row input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #e0dbff;
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: 'Exo 2', sans-serif;
-            outline: none;
-            transition: border 0.2s;
-        }
-        .chat-input-row input:focus { border-color: var(--ai-purple); }
-        .chat-input-row button {
-            padding: 12px 22px;
-            background: linear-gradient(135deg, var(--ai-purple), #a29bfe);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            font-family: 'Exo 2', sans-serif;
-            transition: all 0.2s;
-            white-space: nowrap;
-            width: auto;
-        }
-        .chat-input-row button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(108,92,231,0.3); }
-        .typing-indicator { display: none; align-items: center; gap: 6px; padding: 8px 0; }
-        .typing-indicator.visible { display: flex; }
-        .dot { width: 8px; height: 8px; background: var(--ai-purple); border-radius: 50%; animation: bounce 1.2s infinite; }
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-8px); } }
-
-        /* ===== IMAGE GEN ===== */
-        .img-gen-area { display: flex; flex-direction: column; gap: 14px; }
-        .img-prompt-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .img-prompt-row input {
-            flex: 1;
-            min-width: 200px;
-            padding: 12px 16px;
-            border: 2px solid #e0dbff;
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: 'Exo 2', sans-serif;
-            outline: none;
-        }
-        .img-prompt-row input:focus { border-color: var(--ai-purple); }
-        .img-prompt-row button {
-            padding: 12px 22px;
-            background: linear-gradient(135deg, #e17055, #fdbb2d);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            font-family: 'Exo 2', sans-serif;
-            transition: all 0.2s;
-            white-space: nowrap;
-            width: auto;
-        }
-        .img-prompt-row button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(225,112,85,0.3); }
-        .img-result-box {
-            min-height: 200px;
-            background: #f8f7ff;
-            border: 2px dashed #c8c1ff;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-        .img-result-box .img-description {
-            background: white;
-            border: 1.5px solid #e0dbff;
-            border-radius: 10px;
-            padding: 16px;
-            text-align: left;
-            line-height: 1.7;
-            color: var(--text-main);
-            font-size: 14px;
-            white-space: pre-wrap;
-            width: 100%;
-        }
-        .img-suggestions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .img-sug-btn {
-            padding: 7px 14px;
-            background: #f0edff;
-            color: var(--ai-purple);
-            border: none;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Exo 2', sans-serif;
-            transition: all 0.2s;
-            width: auto;
-        }
-        .img-sug-btn:hover { background: var(--ai-purple); color: white; }
-
-        /* ===== FORM ===== */
-        .vault-form input,
-        .vault-form textarea,
-        .vault-form select {
-            width: 100%;
-            padding: 12px 15px;
-            margin: 8px 0;
-            border: 2px solid #e5e8f0;
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: 'Exo 2', sans-serif;
-            background: #fafbff;
-            transition: border 0.2s;
-            outline: none;
-        }
-        .vault-form input:focus,
-        .vault-form textarea:focus,
-        .vault-form select:focus { border-color: var(--main-blue); }
-        .vault-form button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--main-blue), #2a48ad);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 15px;
-            cursor: pointer;
-            font-family: 'Exo 2', sans-serif;
-            transition: all 0.2s;
-            margin-top: 5px;
-            letter-spacing: 0.5px;
-        }
-        .vault-form button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,42,108,0.3); }
-        .terms-note {
-            font-size: 11px;
-            color: #d63031;
-            font-weight: 700;
-            margin-bottom: 14px;
-            padding: 10px;
-            background: #fff5f5;
-            border-radius: 8px;
-            border-left: 3px solid #d63031;
-        }
-
-        /* ===== BULLETIN ===== */
-        .bulletin-frame {
-            width: 100%;
-            min-height: 450px;
-            border-radius: 12px;
-            border: none;
-            background: white;
-        }
-
-        /* ===== PAYMENTS ===== */
-        .payments-section {
-            grid-column: 1 / -1;
-            text-align: center;
-            background: linear-gradient(135deg, #f0f4ff, #e8ecff);
-            border-top: 5px solid var(--gold);
-        }
-        .payment-methods {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 15px;
-        }
-        .pay-badge {
-            padding: 10px 22px;
-            background: white;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--main-blue);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            border: 2px solid #e0e8ff;
-        }
-
-        /* ===== WHATSAPP ===== */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 22px;
-            right: 22px;
-            background: #25d366;
-            color: white;
-            width: 58px; height: 58px;
-            border-radius: 50%;
-            font-size: 26px;
-            box-shadow: 0 4px 15px rgba(37,211,102,0.4);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: transform 0.2s;
-        }
-        .whatsapp-float:hover { transform: scale(1.1); }
-
-        footer {
-            text-align: center;
-            padding: 35px;
-            color: var(--text-muted);
-            font-size: 13px;
-            border-top: 1px solid #e0e8ff;
-            background: white;
-        }
-
-        /* Loading spinner */
-        .spinner {
-            display: inline-block;
-            width: 16px; height: 16px;
-            border: 2px solid rgba(255,255,255,0.4);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            vertical-align: middle;
-            margin-right: 6px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        @media(max-width: 600px) {
-            .chat-input-row { flex-direction: column; }
-            .img-prompt-row { flex-direction: column; }
-        }
-
-        /* ===== DAILY FEED ===== */
-        .feed-card { border-top: 5px solid var(--gold); grid-column: 1 / -1; }
-        .feed-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-        .feed-date-badge { background: linear-gradient(135deg, var(--main-blue), #2a48ad); color: white; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-        .feed-category-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
-        .feed-cat-btn { padding: 7px 16px; border-radius: 20px; border: 2px solid var(--gold); background: transparent; color: var(--gold-dark); font-weight: 700; font-size: 12px; cursor: pointer; font-family: 'Exo 2', sans-serif; transition: all 0.2s; width: auto; }
-        .feed-cat-btn.active, .feed-cat-btn:hover { background: var(--gold); color: var(--main-blue); }
-        .generate-feed-btn { padding: 12px 28px; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: var(--main-blue); border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: 'Exo 2', sans-serif; transition: all 0.2s; width: auto; }
-        .generate-feed-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(253,187,45,0.4); }
-        .feed-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
-        .feed-item { background: linear-gradient(135deg, #f8f9ff, #f0f4ff); border-radius: 14px; padding: 20px; border-left: 4px solid var(--gold); animation: fadeIn 0.4s ease; }
-        .feed-item-category { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ai-purple); margin-bottom: 8px; }
-        .feed-item-title { font-size: 15px; font-weight: 800; color: var(--main-blue); margin-bottom: 8px; line-height: 1.4; }
-        .feed-item-body { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-        .feed-item-emoji { font-size: 28px; margin-bottom: 10px; display: block; }
-        .feed-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
-        .feed-empty .big-icon { font-size: 48px; margin-bottom: 10px; display: block; }
-        .feed-loading { display: none; text-align: center; padding: 30px; color: var(--ai-purple); font-weight: 600; font-size: 14px; }
-        .feed-loading.visible { display: block; }
-
-        /* ===== GIG MARKETPLACE ===== */
-        .marketplace-card { border-top: 5px solid #00cec9; grid-column: 1 / -1; }
-        .market-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-        .market-tab { padding: 8px 18px; border-radius: 20px; border: 2px solid #00cec9; background: transparent; color: #00cec9; font-weight: 700; font-size: 12px; cursor: pointer; font-family: 'Exo 2', sans-serif; transition: all 0.2s; width: auto; }
-        .market-tab.active, .market-tab:hover { background: #00cec9; color: white; }
-        .gig-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }
-        .gig-card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 3px 12px rgba(0,0,0,0.07); border: 1px solid #e8f8f8; transition: transform 0.2s; animation: fadeIn 0.4s ease; }
-        .gig-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
-        .gig-category { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #00cec9; margin-bottom: 6px; }
-        .gig-title { font-size: 15px; font-weight: 800; color: var(--main-blue); margin-bottom: 8px; line-height: 1.4; }
-        .gig-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
-        .gig-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .gig-rate { font-size: 16px; font-weight: 900; color: var(--main-blue); }
-        .gig-contact { padding: 8px 16px; background: linear-gradient(135deg, #00cec9, #6c5ce7); color: white; border: none; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Exo 2', sans-serif; width: auto; transition: all 0.2s; text-decoration: none; }
-        .gig-contact:hover { transform: scale(1.05); }
-        .gig-seller { font-size: 12px; color: #888; margin-bottom: 10px; }
-        .post-gig-btn { padding: 12px 28px; background: linear-gradient(135deg, #00cec9, #6c5ce7); color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: 'Exo 2', sans-serif; transition: all 0.2s; width: auto; }
-        .post-gig-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,206,201,0.4); }
-        .gig-form-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
-        .gig-form-overlay.visible { display: flex; }
-        .gig-form-box { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-        .gig-form-box h3 { color: var(--main-blue); margin-bottom: 20px; font-size: 18px; }
-        .gig-form-box input, .gig-form-box textarea, .gig-form-box select { width: 100%; padding: 11px 14px; margin: 7px 0; border: 2px solid #e0f7f7; border-radius: 8px; font-size: 13px; font-family: 'Exo 2', sans-serif; outline: none; }
-        .gig-form-box input:focus, .gig-form-box textarea:focus { border-color: #00cec9; }
-        .gig-submit-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, #00cec9, #6c5ce7); color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: 'Exo 2', sans-serif; margin-top: 10px; }
-        .gig-close-btn { float: right; background: none; border: none; font-size: 22px; cursor: pointer; color: #888; width: auto; padding: 0; }
-        .market-empty { text-align: center; padding: 40px; color: var(--text-muted); grid-column: 1/-1; }
-        .market-loading { text-align: center; padding: 30px; color: #00cec9; font-weight: 600; grid-column: 1/-1; }
-        .gig-badge { display: inline-block; padding: 3px 10px; background: #e0f7f7; color: #00cec9; border-radius: 10px; font-size: 11px; font-weight: 700; margin-bottom: 8px; }
+        :root { --main-blue:#1a2a6c; --deep-blue:#0d1a4a; --gold:#fdbb2d; --gold-dark:#e0a020; --ai-purple:#6c5ce7; --ai-cyan:#00cec9; --light-bg:#f0f4ff; --card-bg:#ffffff; --text-main:#1a1a2e; --text-muted:#666; }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'Exo 2',sans-serif; background:var(--light-bg); color:var(--text-main); line-height:1.6; }
+        header { background:linear-gradient(135deg,#0d1a4a 0%,#1a2a6c 50%,#2a48ad 100%); color:white; padding:60px 20px 50px; text-align:center; position:relative; overflow:hidden; }
+        header::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle at 30% 50%,rgba(108,92,231,0.15) 0%,transparent 50%),radial-gradient(circle at 70% 30%,rgba(253,187,45,0.08) 0%,transparent 40%); animation:bgPulse 8s ease-in-out infinite alternate; }
+        @keyframes bgPulse { 0%{transform:scale(1) rotate(0deg);} 100%{transform:scale(1.1) rotate(5deg);} }
+        .logo-circle { width:90px; height:90px; background:white; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; border:3px solid var(--gold); margin-bottom:15px; box-shadow:0 0 30px rgba(253,187,45,0.4); position:relative; z-index:1; animation:logoGlow 3s ease-in-out infinite alternate; }
+        @keyframes logoGlow { 0%{box-shadow:0 0 20px rgba(253,187,45,0.3);} 100%{box-shadow:0 0 40px rgba(253,187,45,0.7);} }
+        .logo-text { color:var(--main-blue); font-weight:900; font-size:22px; font-family:'Space Mono',monospace; }
+        header h1 { font-size:clamp(24px,5vw,42px); font-weight:900; letter-spacing:3px; color:white; position:relative; z-index:1; }
+        header p { opacity:0.85; font-size:16px; margin-top:8px; position:relative; z-index:1; }
+        .stats-bar { background:#0d1a4a; color:white; padding:35px 20px; display:flex; justify-content:space-around; flex-wrap:wrap; text-align:center; }
+        .stat-item { margin:10px; min-width:130px; }
+        .stat-number { font-size:36px; font-weight:900; color:var(--gold); display:block; font-family:'Space Mono',monospace; }
+        .stat-label { font-size:11px; opacity:0.8; text-transform:uppercase; letter-spacing:1.5px; }
+        nav { background:white; padding:14px 20px; position:sticky; top:0; display:flex; justify-content:center; flex-wrap:wrap; gap:5px; box-shadow:0 2px 15px rgba(0,0,0,0.1); z-index:1000; }
+        nav a { margin:4px 10px; text-decoration:none; color:var(--main-blue); font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; padding:6px 10px; border-radius:6px; transition:all 0.2s; }
+        nav a:hover { background:var(--main-blue); color:white; }
+        .main-container { max-width:1200px; margin:30px auto; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:25px; }
+        .card { background:var(--card-bg); border-radius:16px; padding:28px; box-shadow:0 5px 20px rgba(0,0,0,0.07); border-top:5px solid var(--main-blue); }
+        .ai-card { border-top:5px solid var(--ai-purple); grid-column:1/-1; }
+        .card h2 { font-size:20px; font-weight:800; margin-bottom:15px; color:var(--text-main); }
+        .ai-tabs { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+        .ai-tab { padding:10px 22px; border-radius:30px; border:2px solid var(--ai-purple); background:transparent; color:var(--ai-purple); font-weight:700; font-size:14px; cursor:pointer; transition:all 0.2s; font-family:'Exo 2',sans-serif; }
+        .ai-tab.active,.ai-tab:hover { background:var(--ai-purple); color:white; }
+        #chat-panel,#image-panel { display:none; }
+        #chat-panel.visible,#image-panel.visible { display:block; }
+        .chat-box { height:400px; overflow-y:auto; background:#f8f7ff; border:2px solid #e8e4ff; border-radius:12px; padding:16px; margin-bottom:14px; scroll-behavior:smooth; }
+        .msg { margin-bottom:14px; display:flex; flex-direction:column; animation:fadeIn 0.3s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+        .msg.user { align-items:flex-end; }
+        .msg.ai { align-items:flex-start; }
+        .msg-bubble { max-width:80%; padding:11px 16px; border-radius:16px; font-size:14px; line-height:1.6; white-space:pre-wrap; }
+        .msg.user .msg-bubble { background:linear-gradient(135deg,var(--main-blue),#2a48ad); color:white; border-bottom-right-radius:4px; }
+        .msg.ai .msg-bubble { background:white; border:1.5px solid #e0dbff; color:var(--text-main); border-bottom-left-radius:4px; box-shadow:0 2px 8px rgba(108,92,231,0.08); }
+        .msg-label { font-size:11px; color:var(--text-muted); margin-bottom:4px; font-weight:700; letter-spacing:0.5px; }
+        .chat-input-row { display:flex; gap:10px; }
+        .chat-input-row input { flex:1; padding:12px 16px; border:2px solid #e0dbff; border-radius:10px; font-size:14px; font-family:'Exo 2',sans-serif; outline:none; transition:border 0.2s; }
+        .chat-input-row input:focus { border-color:var(--ai-purple); }
+        .chat-input-row button { padding:12px 22px; background:linear-gradient(135deg,var(--ai-purple),#a29bfe); color:white; border:none; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; white-space:nowrap; width:auto; }
+        .typing-indicator { display:none; align-items:center; gap:6px; padding:8px 0; }
+        .typing-indicator.visible { display:flex; }
+        .dot { width:8px; height:8px; background:var(--ai-purple); border-radius:50%; animation:bounce 1.2s infinite; }
+        .dot:nth-child(2){animation-delay:0.2s;} .dot:nth-child(3){animation-delay:0.4s;}
+        @keyframes bounce { 0%,60%,100%{transform:translateY(0);} 30%{transform:translateY(-8px);} }
+        .img-gen-area { display:flex; flex-direction:column; gap:14px; }
+        .img-prompt-row { display:flex; gap:10px; flex-wrap:wrap; }
+        .img-prompt-row input { flex:1; min-width:200px; padding:12px 16px; border:2px solid #e0dbff; border-radius:10px; font-size:14px; font-family:'Exo 2',sans-serif; outline:none; }
+        .img-prompt-row button { padding:12px 22px; background:linear-gradient(135deg,#e17055,#fdbb2d); color:white; border:none; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; white-space:nowrap; width:auto; }
+        .img-result-box { min-height:200px; background:#f8f7ff; border:2px dashed #c8c1ff; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:20px; text-align:center; color:var(--text-muted); font-size:14px; }
+        .img-result-box .img-description { background:white; border:1.5px solid #e0dbff; border-radius:10px; padding:16px; text-align:left; line-height:1.7; color:var(--text-main); font-size:14px; white-space:pre-wrap; width:100%; }
+        .img-suggestions { display:flex; flex-wrap:wrap; gap:8px; }
+        .img-sug-btn { padding:7px 14px; background:#f0edff; color:var(--ai-purple); border:none; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; width:auto; }
+        .img-sug-btn:hover { background:var(--ai-purple); color:white; }
+        .vault-form input,.vault-form textarea,.vault-form select { width:100%; padding:12px 15px; margin:8px 0; border:2px solid #e5e8f0; border-radius:10px; font-size:14px; font-family:'Exo 2',sans-serif; background:#fafbff; transition:border 0.2s; outline:none; }
+        .vault-form button { width:100%; padding:14px; background:linear-gradient(135deg,var(--main-blue),#2a48ad); color:white; border:none; border-radius:10px; font-weight:800; font-size:15px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; margin-top:5px; }
+        .terms-note { font-size:11px; color:#d63031; font-weight:700; margin-bottom:14px; padding:10px; background:#fff5f5; border-radius:8px; border-left:3px solid #d63031; }
+        .bulletin-frame { width:100%; min-height:450px; border-radius:12px; border:none; background:white; }
+        .payments-section { grid-column:1/-1; text-align:center; background:linear-gradient(135deg,#f0f4ff,#e8ecff); border-top:5px solid var(--gold); }
+        .payment-methods { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-top:15px; }
+        .pay-badge { padding:10px 22px; background:white; border-radius:30px; font-weight:700; font-size:14px; color:var(--main-blue); box-shadow:0 3px 10px rgba(0,0,0,0.08); border:2px solid #e0e8ff; }
+        .whatsapp-float { position:fixed; bottom:22px; right:22px; background:#25d366; color:white; width:58px; height:58px; border-radius:50%; font-size:26px; box-shadow:0 4px 15px rgba(37,211,102,0.4); z-index:1000; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:transform 0.2s; }
+        .whatsapp-float:hover { transform:scale(1.1); }
+        footer { text-align:center; padding:35px; color:var(--text-muted); font-size:13px; border-top:1px solid #e0e8ff; background:white; }
+        .spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.4); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
+        @keyframes spin { to{transform:rotate(360deg);} }
+        .feed-card { border-top:5px solid var(--gold); grid-column:1/-1; }
+        .feed-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+        .feed-date-badge { background:linear-gradient(135deg,var(--main-blue),#2a48ad); color:white; padding:6px 16px; border-radius:20px; font-size:12px; font-weight:700; }
+        .feed-category-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+        .feed-cat-btn { padding:7px 16px; border-radius:20px; border:2px solid var(--gold); background:transparent; color:var(--gold-dark); font-weight:700; font-size:12px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; width:auto; }
+        .feed-cat-btn.active,.feed-cat-btn:hover { background:var(--gold); color:var(--main-blue); }
+        .generate-feed-btn { padding:12px 28px; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); color:var(--main-blue); border:none; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; width:auto; }
+        .feed-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:16px; }
+        .feed-item { background:linear-gradient(135deg,#f8f9ff,#f0f4ff); border-radius:14px; padding:20px; border-left:4px solid var(--gold); animation:fadeIn 0.4s ease; }
+        .feed-item-category { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:var(--ai-purple); margin-bottom:8px; }
+        .feed-item-title { font-size:15px; font-weight:800; color:var(--main-blue); margin-bottom:8px; line-height:1.4; }
+        .feed-item-body { font-size:13px; color:var(--text-muted); line-height:1.6; }
+        .feed-item-emoji { font-size:28px; margin-bottom:10px; display:block; }
+        .feed-empty { text-align:center; padding:40px 20px; color:var(--text-muted); }
+        .feed-empty .big-icon { font-size:48px; margin-bottom:10px; display:block; }
+        .feed-loading { display:none; text-align:center; padding:30px; color:var(--ai-purple); font-weight:600; font-size:14px; }
+        .feed-loading.visible { display:block; }
+        .marketplace-card { border-top:5px solid #00cec9; grid-column:1/-1; }
+        .market-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+        .market-tab { padding:8px 18px; border-radius:20px; border:2px solid #00cec9; background:transparent; color:#00cec9; font-weight:700; font-size:12px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; width:auto; }
+        .market-tab.active,.market-tab:hover { background:#00cec9; color:white; }
+        .gig-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:16px; }
+        .gig-card { background:white; border-radius:14px; padding:20px; box-shadow:0 3px 12px rgba(0,0,0,0.07); border:1px solid #e8f8f8; transition:transform 0.2s; animation:fadeIn 0.4s ease; }
+        .gig-card:hover { transform:translateY(-3px); }
+        .gig-category { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:#00cec9; margin-bottom:6px; }
+        .gig-title { font-size:15px; font-weight:800; color:var(--main-blue); margin-bottom:8px; line-height:1.4; }
+        .gig-desc { font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:12px; }
+        .gig-footer { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+        .gig-rate { font-size:16px; font-weight:900; color:var(--main-blue); }
+        .gig-contact { padding:8px 16px; background:linear-gradient(135deg,#00cec9,#6c5ce7); color:white; border:none; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Exo 2',sans-serif; width:auto; transition:all 0.2s; text-decoration:none; }
+        .gig-seller { font-size:12px; color:#888; margin-bottom:10px; }
+        .post-gig-btn { padding:12px 28px; background:linear-gradient(135deg,#00cec9,#6c5ce7); color:white; border:none; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; width:auto; }
+        .gig-form-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; }
+        .gig-form-overlay.visible { display:flex; }
+        .gig-form-box { background:white; border-radius:16px; padding:30px; width:90%; max-width:500px; max-height:90vh; overflow-y:auto; }
+        .gig-form-box h3 { color:var(--main-blue); margin-bottom:20px; font-size:18px; }
+        .gig-form-box input,.gig-form-box textarea,.gig-form-box select { width:100%; padding:11px 14px; margin:7px 0; border:2px solid #e0f7f7; border-radius:8px; font-size:13px; font-family:'Exo 2',sans-serif; outline:none; }
+        .gig-submit-btn { width:100%; padding:13px; background:linear-gradient(135deg,#00cec9,#6c5ce7); color:white; border:none; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer; font-family:'Exo 2',sans-serif; margin-top:10px; }
+        .gig-close-btn { float:right; background:none; border:none; font-size:22px; cursor:pointer; color:#888; width:auto; padding:0; }
+        .market-empty { text-align:center; padding:40px; color:var(--text-muted); grid-column:1/-1; }
+        @media(max-width:600px) { .chat-input-row{flex-direction:column;} .img-prompt-row{flex-direction:column;} }
     </style>
 </head>
 <body>
@@ -821,45 +139,28 @@
 </nav>
 
 <header>
-    <div class="logo-circle">
-        <span class="logo-text">MVG</span>
-    </div>
+    <div class="logo-circle"><span class="logo-text">MVG</span></div>
     <h1>MIND VAULT GLOBAL</h1>
     <p>Empowering Innovation | AI Solutions & Global Business Hub 🌍</p>
 </header>
 
 <section class="stats-bar">
-    <div class="stat-item">
-        <span class="stat-number">500+</span>
-        <span class="stat-label">Ideas Submitted</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-number">200+</span>
-        <span class="stat-label">Global Clients</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-number">50+</span>
-        <span class="stat-label">Services Available</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-number">15+</span>
-        <span class="stat-label">Countries Served</span>
-    </div>
+    <div class="stat-item"><span class="stat-number">500+</span><span class="stat-label">Ideas Submitted</span></div>
+    <div class="stat-item"><span class="stat-number">200+</span><span class="stat-label">Global Clients</span></div>
+    <div class="stat-item"><span class="stat-number">50+</span><span class="stat-label">Services Available</span></div>
+    <div class="stat-item"><span class="stat-number">15+</span><span class="stat-label">Countries Served</span></div>
 </section>
 
 <div class="main-container">
 
     <!-- AI LAB -->
     <div class="card ai-card" id="ai-lab">
-        <h2>🤖 AI Innovation Lab <span style="font-size:13px; color:var(--ai-purple); font-weight:600;">— Powered by Claude AI</span></h2>
-        <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;">Real working AI — directly in your browser. No external links needed.</p>
-
+        <h2>🤖 AI Innovation Lab <span style="font-size:13px;color:var(--ai-purple);font-weight:600;">— Powered by MVG AI</span></h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:18px;">Real working AI — directly in your browser.</p>
         <div class="ai-tabs">
             <button class="ai-tab active" onclick="switchTab('chat')">💬 AI Chat Assistant</button>
             <button class="ai-tab" onclick="switchTab('image')">🎨 Image Description AI</button>
         </div>
-
-        <!-- CHAT PANEL -->
         <div id="chat-panel" class="visible">
             <div class="chat-box" id="chatBox">
                 <div class="msg ai">
@@ -869,20 +170,15 @@
             </div>
             <div class="typing-indicator" id="typingIndicator">
                 <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-                <span style="font-size:12px; color:var(--text-muted); margin-left:4px;">MVG AI likh raha hai...</span>
+                <span style="font-size:12px;color:var(--text-muted);margin-left:4px;">MVG AI is typing...</span>
             </div>
             <div class="chat-input-row">
-                <input type="text" id="chatInput" placeholder="Apna sawal likhen... (Urdu ya English)" onkeydown="if(event.key==='Enter') sendChat()">
+                <input type="text" id="chatInput" placeholder="Ask anything... (Urdu or English)" onkeydown="if(event.key==='Enter') sendChat()">
                 <button onclick="sendChat()" id="sendBtn">Send ➤</button>
             </div>
         </div>
-
-        <!-- IMAGE PANEL -->
         <div id="image-panel">
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">
-                Koi bhi image concept describe karein — AI detailed visual description aur creative prompt tayar karega. 🎨
-            </p>
-            <p style="font-size:12px; color:#888; margin-bottom:10px;">Kuch ideas try karein:</p>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Describe any image concept — AI will create a detailed visual description. 🎨</p>
             <div class="img-suggestions">
                 <button class="img-sug-btn" onclick="fillPrompt('A futuristic Pakistani city at night with neon lights')">Pakistani City Future</button>
                 <button class="img-sug-btn" onclick="fillPrompt('Professional business logo for Mind Vault Global')">MVG Logo Concept</button>
@@ -892,12 +188,10 @@
             <br>
             <div class="img-gen-area">
                 <div class="img-prompt-row">
-                    <input type="text" id="imgPrompt" placeholder="Image concept describe karein... e.g. 'A futuristic office in Karachi'">
+                    <input type="text" id="imgPrompt" placeholder="Describe your image concept...">
                     <button onclick="generateImageDesc()" id="imgBtn">🎨 Generate</button>
                 </div>
-                <div class="img-result-box" id="imgResult">
-                    <span>⬆️ Ooper koi bhi image idea likhein aur Generate dabayein</span>
-                </div>
+                <div class="img-result-box" id="imgResult"><span>⬆️ Write an image idea above and click Generate</span></div>
             </div>
         </div>
     </div>
@@ -919,18 +213,17 @@
     </div>
 
     <!-- COMMUNITY BOARD -->
-    <div class="card" id="board" style="grid-column: 1 / -1;">
+    <div class="card" id="board" style="grid-column:1/-1;">
         <h2>📢 Community Bulletin Board</h2>
         <iframe class="bulletin-frame" src="https://www3.cbox.ws/box/?boxid=3534571&boxtag=v8m3p5" style="min-height:450px;"></iframe>
     </div>
-
 
     <!-- DAILY INNOVATION FEED -->
     <div class="card feed-card" id="feed">
         <div class="feed-header">
             <div>
                 <h2>📰 Daily Innovation Feed</h2>
-                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Fresh AI-powered content every day — business tips, tech trends & innovation ideas</p>
+                <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">Fresh AI-powered content every day</p>
             </div>
             <span class="feed-date-badge" id="feedDateBadge">📅 Loading...</span>
         </div>
@@ -941,21 +234,35 @@
             <button class="feed-cat-btn" onclick="selectFeedCat(this,'Global Market Opportunities')">🌍 Global Markets</button>
             <button class="feed-cat-btn" onclick="selectFeedCat(this,'Freelancing & Remote Work')">💻 Freelancing</button>
         </div>
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <button class="generate-feed-btn" onclick="generateFeed()" id="feedBtn">✨ Generate Today's Content</button>
-            <span style="font-size:12px; color:var(--text-muted);">Click to get fresh content for selected category</span>
         </div>
-        <div class="feed-loading" id="feedLoading">
-            <span class="spinner" style="border-color:rgba(108,92,231,0.3); border-top-color:var(--ai-purple);"></span>
-            Generating fresh content... please wait
-        </div>
+        <div class="feed-loading" id="feedLoading"><span class="spinner" style="border-color:rgba(108,92,231,0.3);border-top-color:var(--ai-purple);"></span> Generating...</div>
         <div class="feed-grid" id="feedGrid">
-            <div class="feed-empty">
-                <span class="big-icon">📰</span>
-                <strong>No content yet</strong><br>
-                Select a category above and click <em>Generate Today's Content</em>
-            </div>
+            <div class="feed-empty"><span class="big-icon">📰</span><strong>No content yet</strong><br>Select a category and click Generate</div>
         </div>
+    </div>
+
+    <!-- GIG MARKETPLACE -->
+    <div class="card marketplace-card" id="marketplace">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px;">
+            <div>
+                <h2>💼 Freelancer Gig Marketplace</h2>
+                <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">Find skilled Pakistani freelancers — Zero commission, Direct contact</p>
+            </div>
+            <button class="post-gig-btn" onclick="openGigForm()">+ Post Your Gig</button>
+        </div>
+        <div class="market-tabs">
+            <button class="market-tab active" onclick="filterGigs(this,'All')">🌐 All</button>
+            <button class="market-tab" onclick="filterGigs(this,'Web Development')">💻 Web Dev</button>
+            <button class="market-tab" onclick="filterGigs(this,'Graphic Design')">🎨 Design</button>
+            <button class="market-tab" onclick="filterGigs(this,'Content Writing')">✍️ Writing</button>
+            <button class="market-tab" onclick="filterGigs(this,'Digital Marketing')">📱 Marketing</button>
+            <button class="market-tab" onclick="filterGigs(this,'Video Editing')">🎬 Video</button>
+            <button class="market-tab" onclick="filterGigs(this,'Data Entry')">📊 Data Entry</button>
+            <button class="market-tab" onclick="filterGigs(this,'AI Services')">🤖 AI Services</button>
+        </div>
+        <div class="gig-grid" id="gigGrid"><div style="text-align:center;padding:30px;color:#00cec9;font-weight:600;grid-column:1/-1;">Loading gigs... ⏳</div></div>
     </div>
 
     <!-- PAYMENTS -->
@@ -969,123 +276,69 @@
         </div>
     </div>
 
-</div>
-
-
-
-    <!-- GIG MARKETPLACE -->
-    <div class="card marketplace-card" id="marketplace">
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:8px;">
-            <div>
-                <h2>💼 Freelancer Gig Marketplace</h2>
-                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Find skilled Pakistani freelancers — Zero commission, Direct contact</p>
-            </div>
-            <button class="post-gig-btn" onclick="openGigForm()">+ Post Your Gig</button>
-        </div>
-
-        <div class="market-tabs" id="marketTabs">
-            <button class="market-tab active" onclick="filterGigs(this,'All')">🌐 All</button>
-            <button class="market-tab" onclick="filterGigs(this,'Web Development')">💻 Web Dev</button>
-            <button class="market-tab" onclick="filterGigs(this,'Graphic Design')">🎨 Design</button>
-            <button class="market-tab" onclick="filterGigs(this,'Content Writing')">✍️ Writing</button>
-            <button class="market-tab" onclick="filterGigs(this,'Digital Marketing')">📱 Marketing</button>
-            <button class="market-tab" onclick="filterGigs(this,'Video Editing')">🎬 Video</button>
-            <button class="market-tab" onclick="filterGigs(this,'Data Entry')">📊 Data Entry</button>
-            <button class="market-tab" onclick="filterGigs(this,'AI Services')">🤖 AI Services</button>
-        </div>
-
-        <div class="gig-grid" id="gigGrid">
-            <div class="market-loading">Loading gigs... ⏳</div>
-        </div>
-    </div>
-
-    <!-- GIG FORM OVERLAY -->
-    <div class="gig-form-overlay" id="gigFormOverlay">
-        <div class="gig-form-box">
-            <button class="gig-close-btn" onclick="closeGigForm()">✕</button>
-            <h3>🚀 Post Your Gig</h3>
-            <p style="font-size:12px; color:#888; margin-bottom:15px;">Fill in your details — your gig will appear in the marketplace!</p>
-            <input type="text" id="gigName" placeholder="Your Name *" required>
-            <select id="gigCategory">
-                <option value="Web Development">💻 Web Development</option>
-                <option value="Graphic Design">🎨 Graphic Design</option>
-                <option value="Content Writing">✍️ Content Writing</option>
-                <option value="Digital Marketing">📱 Digital Marketing</option>
-                <option value="Video Editing">🎬 Video Editing</option>
-                <option value="Data Entry">📊 Data Entry</option>
-                <option value="AI Services">🤖 AI Services</option>
-                <option value="Other">⚡ Other</option>
-            </select>
-            <input type="text" id="gigTitle" placeholder="Gig Title e.g. I will design your logo *" required>
-            <textarea id="gigDesc" rows="4" placeholder="Describe your service... *" required></textarea>
-            <input type="text" id="gigRate" placeholder="Your Rate e.g. $10/hour or $50/project *" required>
-            <input type="text" id="gigContact" placeholder="WhatsApp or Email for clients *" required>
-            <button class="gig-submit-btn" onclick="submitGig()">🚀 Post My Gig</button>
-            <p style="font-size:11px; color:#aaa; margin-top:10px; text-align:center;">Your contact info will only be shown to interested clients</p>
-        </div>
-    </div>
-
     <!-- ABOUT US -->
-    <div class="card" id="about" style="grid-column: 1 / -1; background: linear-gradient(135deg, #0d1a4a, #1a2a6c); color: white;">
-        <h2 style="color: var(--gold);">🌍 About Mind Vault Global</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px;">
-            <div>
-                <h3 style="color: var(--gold); font-size: 16px; margin-bottom: 10px;">Who We Are</h3>
-                <p style="font-size: 14px; opacity: 0.9; line-height: 1.8;">Mind Vault Global is a Pakistani-based AI Hub and Business Marketplace dedicated to empowering entrepreneurs, freelancers, and innovators across the globe. We bridge the gap between cutting-edge AI technology and real-world business needs.</p>
-            </div>
-            <div>
-                <h3 style="color: var(--gold); font-size: 16px; margin-bottom: 10px;">Our Mission</h3>
-                <p style="font-size: 14px; opacity: 0.9; line-height: 1.8;">To provide free, accessible AI tools and a global platform for Pakistani entrepreneurs to connect, collaborate, and grow their businesses beyond borders. We believe innovation knows no boundaries.</p>
-            </div>
-            <div>
-                <h3 style="color: var(--gold); font-size: 16px; margin-bottom: 10px;">What We Offer</h3>
-                <p style="font-size: 14px; opacity: 0.9; line-height: 1.8;">Free AI-powered chat assistant, daily innovation content, a global project marketplace, and a community bulletin board — all designed to help you grow faster and smarter.</p>
-            </div>
-            <div>
-                <h3 style="color: var(--gold); font-size: 16px; margin-bottom: 10px;">Contact Us</h3>
-                <p style="font-size: 14px; opacity: 0.9; line-height: 1.8;">📧 Email: mindvaultglobal1@gmail.com<br>📱 WhatsApp: +92 300 0000000<br>🌍 Based in Pakistan 🇵🇰<br>Serving clients in 15+ countries</p>
-            </div>
+    <div class="card" id="about" style="grid-column:1/-1;background:linear-gradient(135deg,#0d1a4a,#1a2a6c);color:white;">
+        <h2 style="color:var(--gold);">🌍 About Mind Vault Global</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;margin-top:20px;">
+            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Who We Are</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">Mind Vault Global is a Pakistani-based AI Hub and Business Marketplace dedicated to empowering entrepreneurs, freelancers, and innovators across the globe.</p></div>
+            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Our Mission</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">To provide free, accessible AI tools and a global platform for Pakistani entrepreneurs to connect, collaborate, and grow their businesses beyond borders.</p></div>
+            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">What We Offer</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">Free AI-powered chat assistant, daily innovation content, a global project marketplace, and a community bulletin board.</p></div>
+            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Contact Us</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">📧 mindvaultglobal1@gmail.com<br>📱 WhatsApp: +92 300 0000000<br>🌍 Pakistan 🇵🇰 | 15+ Countries</p></div>
         </div>
     </div>
 
     <!-- PRIVACY POLICY -->
-    <div class="card" id="privacy" style="grid-column: 1 / -1;">
+    <div class="card" id="privacy" style="grid-column:1/-1;">
         <h2>🔒 Privacy Policy</h2>
-        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Last updated: April 2026</p>
-        <div style="font-size: 14px; line-height: 1.9; color: var(--text-main);">
-            <h3 style="font-size: 15px; color: var(--main-blue); margin: 15px 0 8px;">1. Information We Collect</h3>
-            <p>Mind Vault Global collects information you voluntarily provide, including email addresses and project descriptions submitted through our Project Vault form. We also collect anonymous usage data through Google Analytics to improve our services.</p>
-
-            <h3 style="font-size: 15px; color: var(--main-blue); margin: 15px 0 8px;">2. How We Use Your Information</h3>
-            <p>Information submitted through our forms is used solely to connect you with potential business partners and clients. We do not sell, trade, or rent your personal information to third parties. Analytics data is used only to understand website traffic and improve user experience.</p>
-
-            <h3 style="font-size: 15px; color: var(--main-blue); margin: 15px 0 8px;">3. AI Chat & Tools</h3>
-            <p>Messages entered in our AI Chat Assistant are processed through Groq's API to generate responses. We do not store your chat conversations. Please avoid sharing sensitive personal information in the chat.</p>
-
-            <h3 style="font-size: 15px; color: var(--main-blue); margin: 15px 0 8px;">4. Cookies</h3>
-            <p>We use Google Analytics cookies to collect anonymous information about how visitors use our website. You can opt out of Google Analytics by installing the Google Analytics opt-out browser add-on.</p>
-
-            <h3 style="font-size: 15px; color: var(--main-blue); margin: 15px 0 8px;">5. Third-Party Services</h3>
-            <p>Our website uses third-party services including Google Analytics, Formspree (for form submissions), and Groq AI API. Each of these services has their own privacy policies governing the use of your information.</p>
-
-            <h3 style="font-size: 15px; color: var(--main-blue); margin: 15px 0 8px;">6. Data Security</h3>
-            <p>We take reasonable precautions to protect your information. However, no method of transmission over the internet is 100% secure. We encourage users not to share sensitive personal or financial information through our platform.</p>
-
-            <h3 style="font-size: 15px; color: var(--main-blue); margin: 15px 0 8px;">7. Children's Privacy</h3>
-            <p>Mind Vault Global is not intended for children under 13 years of age. We do not knowingly collect personal information from children.</p>
-
-            <h3 style="font-size: 15px; color: var(--main-blue); margin: 15px 0 8px;">8. Contact Us</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">Last updated: April 2026</p>
+        <div style="font-size:14px;line-height:1.9;color:var(--text-main);">
+            <h3 style="font-size:15px;color:var(--main-blue);margin:15px 0 8px;">1. Information We Collect</h3>
+            <p>Mind Vault Global collects information you voluntarily provide, including email addresses and project descriptions submitted through our Project Vault form. We also collect anonymous usage data through Google Analytics.</p>
+            <h3 style="font-size:15px;color:var(--main-blue);margin:15px 0 8px;">2. How We Use Your Information</h3>
+            <p>Information submitted through our forms is used solely to connect you with potential business partners and clients. We do not sell, trade, or rent your personal information to third parties.</p>
+            <h3 style="font-size:15px;color:var(--main-blue);margin:15px 0 8px;">3. AI Chat & Tools</h3>
+            <p>Messages entered in our AI Chat Assistant are processed through Groq's API to generate responses. We do not store your chat conversations.</p>
+            <h3 style="font-size:15px;color:var(--main-blue);margin:15px 0 8px;">4. Contact Us</h3>
             <p>If you have any questions about this Privacy Policy, please contact us at: <strong>mindvaultglobal1@gmail.com</strong></p>
         </div>
     </div>
 
-<footer>
-    <p>&copy; 2026 Mind Vault Global | Pakistan 🇵🇰</p>
-</footer>
+</div>
+
+<!-- GIG FORM OVERLAY -->
+<div class="gig-form-overlay" id="gigFormOverlay">
+    <div class="gig-form-box">
+        <button class="gig-close-btn" onclick="closeGigForm()">✕</button>
+        <h3>🚀 Post Your Gig</h3>
+        <input type="text" id="gigName" placeholder="Your Name *">
+        <select id="gigCategory">
+            <option value="Web Development">💻 Web Development</option>
+            <option value="Graphic Design">🎨 Graphic Design</option>
+            <option value="Content Writing">✍️ Content Writing</option>
+            <option value="Digital Marketing">📱 Digital Marketing</option>
+            <option value="Video Editing">🎬 Video Editing</option>
+            <option value="Data Entry">📊 Data Entry</option>
+            <option value="AI Services">🤖 AI Services</option>
+            <option value="Other">⚡ Other</option>
+        </select>
+        <input type="text" id="gigTitle" placeholder="Gig Title e.g. I will design your logo *">
+        <textarea id="gigDesc" rows="4" placeholder="Describe your service... *"></textarea>
+        <input type="text" id="gigRate" placeholder="Your Rate e.g. $10/hour *">
+        <input type="text" id="gigContact" placeholder="WhatsApp or Email *">
+        <button class="gig-submit-btn" onclick="submitGig()">🚀 Post My Gig</button>
+    </div>
+</div>
+
+<footer><p>&copy; 2026 Mind Vault Global | Pakistan 🇵🇰</p></footer>
 
 <script>
+    // ===== HELPER =====
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    }
 
-    // ===== SECURE API CALL via Netlify Function =====
+    // ===== API CALL =====
     async function callAI(messages, system) {
         const response = await fetch('https://mvg-ai-worker.aimihu124.workers.dev', {
             method: 'POST',
@@ -1102,7 +355,6 @@
         document.getElementById('chat-panel').classList.remove('visible');
         document.getElementById('image-panel').classList.remove('visible');
         document.querySelectorAll('.ai-tab').forEach(t => t.classList.remove('active'));
-
         if (tab === 'chat') {
             document.getElementById('chat-panel').classList.add('visible');
             document.querySelectorAll('.ai-tab')[0].classList.add('active');
@@ -1112,86 +364,63 @@
         }
     }
 
-    // ===== CHAT HISTORY =====
+    // ===== CHAT =====
     let chatHistory = [];
 
-    // ===== SEND CHAT =====
     async function sendChat() {
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
         if (!msg) return;
-
         addMessage('user', msg);
         input.value = '';
-
         const sendBtn = document.getElementById('sendBtn');
         sendBtn.innerHTML = '<span class="spinner"></span>Wait...';
         sendBtn.disabled = true;
-
-        const typingEl = document.getElementById('typingIndicator');
-        typingEl.classList.add('visible');
-
+        document.getElementById('typingIndicator').classList.add('visible');
         chatHistory.push({ role: 'user', content: msg });
-
         try {
-            const reply = await callAI(chatHistory, `You are MVG AI — the intelligent assistant for Mind Vault Global, a Pakistani AI Hub and Business Marketplace. You help users with business ideas, project planning, AI solutions, freelancing, global trade, and innovation. Be helpful, professional, and friendly. You can respond in both Urdu (Roman Urdu) and English based on what the user writes. Keep responses concise and practical. Add relevant emojis occasionally for a modern feel. Never mention you are Claude or Llama or made by any company — you are MVG AI, the assistant of Mind Vault Global.`);
-
+            const reply = await callAI(chatHistory, 'You are MVG AI — the intelligent assistant for Mind Vault Global, a Pakistani AI Hub and Business Marketplace. Help users with business ideas, project planning, AI solutions, freelancing, and innovation. Be helpful and friendly. Respond in Urdu or English based on what the user writes. Never mention you are Claude or Llama — you are MVG AI.');
             chatHistory.push({ role: 'assistant', content: reply });
-            typingEl.classList.remove('visible');
+            document.getElementById('typingIndicator').classList.remove('visible');
             addMessage('ai', reply);
-
         } catch (err) {
-            typingEl.classList.remove('visible');
-            addMessage('ai', '⚠️ Connection issue. Please check your internet and try again.');
+            document.getElementById('typingIndicator').classList.remove('visible');
+            addMessage('ai', '⚠️ Connection issue. Please try again.');
         }
-
         sendBtn.innerHTML = 'Send ➤';
         sendBtn.disabled = false;
     }
 
     function addMessage(role, text) {
         const box = document.getElementById('chatBox');
-        const label = role === 'user' ? '👤 Aap' : '🤖 MVG AI';
+        const label = role === 'user' ? '👤 You' : '🤖 MVG AI';
         const div = document.createElement('div');
-        div.className = `msg ${role}`;
-        div.innerHTML = `<div class="msg-label">${label}</div><div class="msg-bubble">${escapeHtml(text)}</div>`;
+        div.className = 'msg ' + role;
+        div.innerHTML = '<div class="msg-label">' + label + '</div><div class="msg-bubble">' + escapeHtml(text) + '</div>';
         box.appendChild(div);
         box.scrollTop = box.scrollHeight;
     }
 
-
-    // ===== IMAGE DESCRIPTION =====
-    function fillPrompt(text) {
-        document.getElementById('imgPrompt').value = text;
-    }
+    // ===== IMAGE =====
+    function fillPrompt(text) { document.getElementById('imgPrompt').value = text; }
 
     async function generateImageDesc() {
         const prompt = document.getElementById('imgPrompt').value.trim();
-        if (!prompt) { alert('Pehle koi image concept likhen!'); return; }
-
+        if (!prompt) { alert('Please write an image concept first!'); return; }
         const resultBox = document.getElementById('imgResult');
         const imgBtn = document.getElementById('imgBtn');
-
         imgBtn.innerHTML = '<span class="spinner"></span>Creating...';
         imgBtn.disabled = true;
-        resultBox.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-        resultBox.style.display = 'flex';
-        resultBox.style.gap = '6px';
-
+        resultBox.innerHTML = '<span>Generating...</span>';
         try {
             const reply = await callAI(
-                [{ role: 'user', content: `Create an image concept for: ${prompt}` }],
-                'You are a creative AI art director for Mind Vault Global. When given an image concept, provide: 1. A vivid, detailed visual description of the image (3-4 sentences) 2. Color palette (3-4 key colors) 3. Mood/Style 4. A ready-to-use prompt for AI image generators like Midjourney or DALL-E. Format clearly with these exact headings. Keep it professional and creative.'
+                [{ role: 'user', content: 'Create an image concept for: ' + prompt }],
+                'You are a creative AI art director for Mind Vault Global. When given an image concept, provide: 1. A vivid visual description (3-4 sentences) 2. Color palette 3. Mood/Style 4. A ready-to-use Midjourney/DALL-E prompt.'
             );
-
-            resultBox.style.display = 'flex';
-            resultBox.style.gap = '0';
-            resultBox.innerHTML = `<div class="img-description">${escapeHtml(reply)}</div>`;
-
+            resultBox.innerHTML = '<div class="img-description">' + escapeHtml(reply) + '</div>';
         } catch (err) {
             resultBox.innerHTML = '<span>⚠️ Error. Please try again.</span>';
         }
-
         imgBtn.innerHTML = '🎨 Generate';
         imgBtn.disabled = false;
     }
@@ -1205,122 +434,73 @@
         selectedFeedCategory = cat;
     }
 
-    // Set today's date on load
-    window.addEventListener('DOMContentLoaded', () => {
-        const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('feedDateBadge').textContent = '📅 ' + now.toLocaleDateString('en-US', options);
-    });
-
     async function generateFeed() {
         const feedBtn = document.getElementById('feedBtn');
         const feedLoading = document.getElementById('feedLoading');
         const feedGrid = document.getElementById('feedGrid');
-
         feedBtn.innerHTML = '<span class="spinner"></span>Generating...';
         feedBtn.disabled = true;
         feedLoading.classList.add('visible');
         feedGrid.innerHTML = '';
-
         const today = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-
         try {
             const raw = await callAI(
-                [{ role: 'user', content: `Generate 4 fresh content cards for category: ${selectedFeedCategory}` }],
-                `You are a content editor for Mind Vault Global, a Pakistani AI Hub and Business Marketplace. Generate exactly 4 short, engaging content cards for today's daily innovation feed. Each card must be relevant, practical, and interesting for Pakistani entrepreneurs and global business people. TODAY'S DATE: ${today}. CATEGORY: ${selectedFeedCategory}. Respond ONLY with a valid JSON array of 4 objects. No markdown, no backticks, nothing else. Each object must have exactly these fields: emoji (one relevant emoji), category (short label max 3 words), title (catchy headline max 10 words), body (useful insight 2-3 sentences).`
+                [{ role: 'user', content: 'Generate 4 fresh content cards for category: ' + selectedFeedCategory }],
+                'You are a content editor for Mind Vault Global. Generate exactly 4 short engaging content cards for Pakistani entrepreneurs. TODAY: ' + today + '. CATEGORY: ' + selectedFeedCategory + '. Respond ONLY with a valid JSON array of 4 objects with fields: emoji, category, title, body. No markdown, no backticks.'
             );
-            
             let cards;
-            try {
-                const clean = raw.replace(/```json|```/g, '').trim();
-                cards = JSON.parse(clean);
-            } catch(e) {
-                cards = [];
-            }
-
+            try { cards = JSON.parse(raw.replace(/```json|```/g,'').trim()); } catch(e) { cards = []; }
             feedLoading.classList.remove('visible');
-
             if (!cards || cards.length === 0) {
-                feedGrid.innerHTML = '<div class="feed-empty"><span class="big-icon">⚠️</span>Could not load content. Please try again.</div>';
+                feedGrid.innerHTML = '<div class="feed-empty"><span class="big-icon">⚠️</span>Could not load. Please try again.</div>';
             } else {
                 feedGrid.innerHTML = '';
                 cards.forEach(card => {
                     const div = document.createElement('div');
                     div.className = 'feed-item';
-                    div.innerHTML = `
-                        <span class="feed-item-emoji">${card.emoji || '💡'}</span>
-                        <div class="feed-item-category">${escapeHtml(card.category || selectedFeedCategory)}</div>
-                        <div class="feed-item-title">${escapeHtml(card.title || '')}</div>
-                        <div class="feed-item-body">${escapeHtml(card.body || '')}</div>
-                    `;
+                    div.innerHTML = '<span class="feed-item-emoji">' + (card.emoji||'💡') + '</span><div class="feed-item-category">' + escapeHtml(card.category||'') + '</div><div class="feed-item-title">' + escapeHtml(card.title||'') + '</div><div class="feed-item-body">' + escapeHtml(card.body||'') + '</div>';
                     feedGrid.appendChild(div);
                 });
             }
-
         } catch(err) {
             feedLoading.classList.remove('visible');
             feedGrid.innerHTML = '<div class="feed-empty"><span class="big-icon">⚠️</span>Connection error. Please try again.</div>';
         }
-
-        feedBtn.innerHTML = '✨ Generate Today\'s Content';
+        feedBtn.innerHTML = "✨ Generate Today's Content";
         feedBtn.disabled = false;
-    }
-
-
-    function escapeHtml(text) {
-        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
     }
 
     // ===== GIG MARKETPLACE =====
     const SHEET_ID = '1YwKvlmI5DvPMBE-u9of9WPXAT57SLFWSrZDEsCuzvMs';
-    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Gigs`;
-    const FORM_URL = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Gigs';
+    let allGigs = [];
+    let currentFilter = 'All';
 
-    allGigs = [];
-    currentFilter = 'All';
-
-    // Load gigs from Google Sheet
     async function loadGigs() {
-        const grid = document.getElementById('gigGrid');
         try {
             const res = await fetch(SHEET_URL);
             const text = await res.text();
-            const json = JSON.parse(text.match(/google.visualization.Query.setResponse\((.*)\)/s)[1]);
+            const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
             const rows = json.table.rows;
-
-            if (!rows || rows.length === 0) {
-                showSampleGigs();
-                return;
-            }
-
+            if (!rows || rows.length === 0) { showSampleGigs(); return; }
             allGigs = rows.map(row => ({
-                name: row.c[0]?.v || '',
-                category: row.c[1]?.v || 'Other',
-                title: row.c[2]?.v || '',
-                desc: row.c[3]?.v || '',
-                rate: row.c[4]?.v || '',
-                contact: row.c[5]?.v || '',
-                approved: row.c[6]?.v || 'Yes'
+                name: row.c[0]?.v||'', category: row.c[1]?.v||'Other',
+                title: row.c[2]?.v||'', desc: row.c[3]?.v||'',
+                rate: row.c[4]?.v||'', contact: row.c[5]?.v||'',
+                approved: row.c[6]?.v||'Yes'
             })).filter(g => g.approved === 'Yes' && g.title);
-
-            if (allGigs.length === 0) {
-                showSampleGigs();
-            } else {
-                renderGigs(allGigs);
-            }
-        } catch(e) {
-            showSampleGigs();
-        }
+            if (allGigs.length === 0) { showSampleGigs(); } else { renderGigs(allGigs); }
+        } catch(e) { showSampleGigs(); }
     }
 
     function showSampleGigs() {
         allGigs = [
-            { name: 'Ahmed K.', category: 'Web Development', title: 'I will build your professional website', desc: 'Full stack web development using HTML, CSS, JavaScript and modern frameworks. Fast delivery guaranteed.', rate: '$30/page', contact: 'Contact via platform' },
-            { name: 'Sara M.', category: 'Graphic Design', title: 'I will design stunning logos and branding', desc: 'Professional logo design, brand identity, business cards and social media graphics. Unlimited revisions.', rate: '$15/logo', contact: 'Contact via platform' },
-            { name: 'Ali R.', category: 'Content Writing', title: 'I will write SEO blog articles', desc: 'High quality, plagiarism-free articles optimized for Google. English and Urdu content available.', rate: '$8/article', contact: 'Contact via platform' },
-            { name: 'Fatima H.', category: 'Digital Marketing', title: 'I will manage your social media pages', desc: 'Complete social media management including content creation, posting schedule and audience growth strategy.', rate: '$50/month', contact: 'Contact via platform' },
-            { name: 'Usman T.', category: 'Video Editing', title: 'I will edit your YouTube videos professionally', desc: 'Professional video editing with transitions, color grading, subtitles and thumbnail design included.', rate: '$20/video', contact: 'Contact via platform' },
-            { name: 'Zara B.', category: 'AI Services', title: 'I will create AI powered chatbots for your business', desc: 'Custom AI chatbot development for websites and WhatsApp. Automate customer support and lead generation.', rate: '$100/bot', contact: 'Contact via platform' }
+            { name:'Ahmed K.', category:'Web Development', title:'I will build your professional website', desc:'Full stack web development using HTML, CSS, JavaScript. Fast delivery guaranteed.', rate:'$30/page', contact:'Contact via platform' },
+            { name:'Sara M.', category:'Graphic Design', title:'I will design stunning logos and branding', desc:'Professional logo design with unlimited revisions. All formats included.', rate:'$15/logo', contact:'Contact via platform' },
+            { name:'Ali R.', category:'Content Writing', title:'I will write SEO blog articles', desc:'High quality plagiarism-free articles in English and Urdu.', rate:'$8/article', contact:'Contact via platform' },
+            { name:'Fatima H.', category:'Digital Marketing', title:'I will manage your social media pages', desc:'Complete social media management including content and posting schedule.', rate:'$50/month', contact:'Contact via platform' },
+            { name:'Usman T.', category:'Video Editing', title:'I will edit your YouTube videos professionally', desc:'Professional editing with transitions, color grading and subtitles.', rate:'$20/video', contact:'Contact via platform' },
+            { name:'Zara B.', category:'AI Services', title:'I will create AI chatbots for your business', desc:'Custom AI chatbot for websites and WhatsApp. 24/7 support.', rate:'$100/bot', contact:'Contact via platform' }
         ];
         renderGigs(allGigs);
     }
@@ -1328,33 +508,15 @@
     function renderGigs(gigs) {
         const grid = document.getElementById('gigGrid');
         const filtered = currentFilter === 'All' ? gigs : gigs.filter(g => g.category === currentFilter);
-
-        if (filtered.length === 0) {
-            grid.innerHTML = '<div class="market-empty"><span style="font-size:40px">😔</span><br>No gigs in this category yet.<br><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:15px">Be the first to post!</button></div>';
-            return;
-        }
-
+        if (filtered.length === 0) { grid.innerHTML = '<div class="market-empty">😔<br>No gigs in this category yet.</div>'; return; }
         const emojis = {'Web Development':'💻','Graphic Design':'🎨','Content Writing':'✍️','Digital Marketing':'📱','Video Editing':'🎬','Data Entry':'📊','AI Services':'🤖','Other':'⚡'};
-
-        grid.innerHTML = filtered.map(g => `
-            <div class="gig-card">
-                <div class="gig-category">${emojis[g.category] || '⚡'} ${escapeHtml(g.category)}</div>
-                <div class="gig-title">${escapeHtml(g.title)}</div>
-                <div class="gig-seller">👤 ${escapeHtml(g.name)}</div>
-                <div class="gig-desc">${escapeHtml(g.desc)}</div>
-                <div class="gig-footer">
-                    <span class="gig-rate">💰 ${escapeHtml(g.rate)}</span>
-                    <a class="gig-contact" href="mailto:${escapeHtml(g.contact)}" onclick="handleContact(event, '${escapeHtml(g.contact)}')">Contact ➤</a>
-                </div>
-            </div>
-        `).join('');
+        grid.innerHTML = filtered.map(g => '<div class="gig-card"><div class="gig-category">' + (emojis[g.category]||'⚡') + ' ' + escapeHtml(g.category) + '</div><div class="gig-title">' + escapeHtml(g.title) + '</div><div class="gig-seller">👤 ' + escapeHtml(g.name) + '</div><div class="gig-desc">' + escapeHtml(g.desc) + '</div><div class="gig-footer"><span class="gig-rate">💰 ' + escapeHtml(g.rate) + '</span><a class="gig-contact" href="#" onclick="handleContact(event,\'' + escapeHtml(g.contact) + '\')">Contact ➤</a></div></div>').join('');
     }
 
     function handleContact(e, contact) {
-        if (contact === 'Contact via platform') {
-            e.preventDefault();
-            alert('Please use the Community Board to contact this freelancer!');
-        }
+        e.preventDefault();
+        if (contact === 'Contact via platform') { alert('Please use the Community Board to contact this freelancer!'); }
+        else { window.location.href = 'mailto:' + contact; }
     }
 
     function filterGigs(btn, category) {
@@ -1364,13 +526,8 @@
         renderGigs(allGigs);
     }
 
-    function openGigForm() {
-        document.getElementById('gigFormOverlay').classList.add('visible');
-    }
-
-    function closeGigForm() {
-        document.getElementById('gigFormOverlay').classList.remove('visible');
-    }
+    function openGigForm() { document.getElementById('gigFormOverlay').classList.add('visible'); }
+    function closeGigForm() { document.getElementById('gigFormOverlay').classList.remove('visible'); }
 
     async function submitGig() {
         const name = document.getElementById('gigName').value.trim();
@@ -1379,30 +536,20 @@
         const desc = document.getElementById('gigDesc').value.trim();
         const rate = document.getElementById('gigRate').value.trim();
         const contact = document.getElementById('gigContact').value.trim();
-
-        if (!name || !title || !desc || !rate || !contact) {
-            alert('Please fill all fields!');
-            return;
-        }
-
-        // Add to local display immediately
-        const newGig = { name, category, title, desc, rate, contact };
-        allGigs.unshift(newGig);
+        if (!name||!title||!desc||!rate||!contact) { alert('Please fill all fields!'); return; }
+        allGigs.unshift({ name, category, title, desc, rate, contact });
         renderGigs(allGigs);
         closeGigForm();
-
-        // Clear form
         ['gigName','gigTitle','gigDesc','gigRate','gigContact'].forEach(id => document.getElementById(id).value = '');
-
-        alert('✅ Your gig has been posted! It will appear in the marketplace after admin approval.');
+        alert('✅ Your gig has been posted!');
     }
 
-    // Load gigs on page load
+    // ===== ON LOAD =====
     window.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+        document.getElementById('feedDateBadge').textContent = '📅 ' + now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
         loadGigs();
     });
-
 </script>
-
 </body>
 </html>
