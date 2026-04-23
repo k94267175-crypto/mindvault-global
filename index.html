@@ -5,12 +5,276 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mind Vault Global | AI Hub & Business Marketplace</title>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5CWZLH3H6H"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5CWZLH3H6H">
+    // ===== GIG MARKETPLACE =====
+    const SHEET_ID = '1YwKvlmI5DvPMBE-u9of9WPXAT57SLFWSrZDEsCuzvMs';
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Gigs`;
+    const FORM_URL = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
+
+    let allGigs = [];
+    let currentFilter = 'All';
+
+    // Load gigs from Google Sheet
+    async function loadGigs() {
+        const grid = document.getElementById('gigGrid');
+        try {
+            const res = await fetch(SHEET_URL);
+            const text = await res.text();
+            const json = JSON.parse(text.match(/google.visualization.Query.setResponse\((.*)\)/s)[1]);
+            const rows = json.table.rows;
+
+            if (!rows || rows.length === 0) {
+                showSampleGigs();
+                return;
+            }
+
+            allGigs = rows.map(row => ({
+                name: row.c[0]?.v || '',
+                category: row.c[1]?.v || 'Other',
+                title: row.c[2]?.v || '',
+                desc: row.c[3]?.v || '',
+                rate: row.c[4]?.v || '',
+                contact: row.c[5]?.v || '',
+                approved: row.c[6]?.v || 'Yes'
+            })).filter(g => g.approved === 'Yes' && g.title);
+
+            if (allGigs.length === 0) {
+                showSampleGigs();
+            } else {
+                renderGigs(allGigs);
+            }
+        } catch(e) {
+            showSampleGigs();
+        }
+    }
+
+    function showSampleGigs() {
+        allGigs = [
+            { name: 'Ahmed K.', category: 'Web Development', title: 'I will build your professional website', desc: 'Full stack web development using HTML, CSS, JavaScript and modern frameworks. Fast delivery guaranteed.', rate: '$30/page', contact: 'Contact via platform' },
+            { name: 'Sara M.', category: 'Graphic Design', title: 'I will design stunning logos and branding', desc: 'Professional logo design, brand identity, business cards and social media graphics. Unlimited revisions.', rate: '$15/logo', contact: 'Contact via platform' },
+            { name: 'Ali R.', category: 'Content Writing', title: 'I will write SEO blog articles', desc: 'High quality, plagiarism-free articles optimized for Google. English and Urdu content available.', rate: '$8/article', contact: 'Contact via platform' },
+            { name: 'Fatima H.', category: 'Digital Marketing', title: 'I will manage your social media pages', desc: 'Complete social media management including content creation, posting schedule and audience growth strategy.', rate: '$50/month', contact: 'Contact via platform' },
+            { name: 'Usman T.', category: 'Video Editing', title: 'I will edit your YouTube videos professionally', desc: 'Professional video editing with transitions, color grading, subtitles and thumbnail design included.', rate: '$20/video', contact: 'Contact via platform' },
+            { name: 'Zara B.', category: 'AI Services', title: 'I will create AI powered chatbots for your business', desc: 'Custom AI chatbot development for websites and WhatsApp. Automate customer support and lead generation.', rate: '$100/bot', contact: 'Contact via platform' }
+        ];
+        renderGigs(allGigs);
+    }
+
+    function renderGigs(gigs) {
+        const grid = document.getElementById('gigGrid');
+        const filtered = currentFilter === 'All' ? gigs : gigs.filter(g => g.category === currentFilter);
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="market-empty"><span style="font-size:40px">😔</span><br>No gigs in this category yet.<br><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:15px">Be the first to post!</button></div>';
+            return;
+        }
+
+        const emojis = {'Web Development':'💻','Graphic Design':'🎨','Content Writing':'✍️','Digital Marketing':'📱','Video Editing':'🎬','Data Entry':'📊','AI Services':'🤖','Other':'⚡'};
+
+        grid.innerHTML = filtered.map(g => `
+            <div class="gig-card">
+                <div class="gig-category">${emojis[g.category] || '⚡'} ${escapeHtml(g.category)}</div>
+                <div class="gig-title">${escapeHtml(g.title)}</div>
+                <div class="gig-seller">👤 ${escapeHtml(g.name)}</div>
+                <div class="gig-desc">${escapeHtml(g.desc)}</div>
+                <div class="gig-footer">
+                    <span class="gig-rate">💰 ${escapeHtml(g.rate)}</span>
+                    <a class="gig-contact" href="mailto:${escapeHtml(g.contact)}" onclick="handleContact(event, '${escapeHtml(g.contact)}')">Contact ➤</a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function handleContact(e, contact) {
+        if (contact === 'Contact via platform') {
+            e.preventDefault();
+            alert('Please use the Community Board to contact this freelancer!');
+        }
+    }
+
+    function filterGigs(btn, category) {
+        document.querySelectorAll('.market-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = category;
+        renderGigs(allGigs);
+    }
+
+    function openGigForm() {
+        document.getElementById('gigFormOverlay').classList.add('visible');
+    }
+
+    function closeGigForm() {
+        document.getElementById('gigFormOverlay').classList.remove('visible');
+    }
+
+    async function submitGig() {
+        const name = document.getElementById('gigName').value.trim();
+        const category = document.getElementById('gigCategory').value;
+        const title = document.getElementById('gigTitle').value.trim();
+        const desc = document.getElementById('gigDesc').value.trim();
+        const rate = document.getElementById('gigRate').value.trim();
+        const contact = document.getElementById('gigContact').value.trim();
+
+        if (!name || !title || !desc || !rate || !contact) {
+            alert('Please fill all fields!');
+            return;
+        }
+
+        // Add to local display immediately
+        const newGig = { name, category, title, desc, rate, contact };
+        allGigs.unshift(newGig);
+        renderGigs(allGigs);
+        closeGigForm();
+
+        // Clear form
+        ['gigName','gigTitle','gigDesc','gigRate','gigContact'].forEach(id => document.getElementById(id).value = '');
+
+        alert('✅ Your gig has been posted! It will appear in the marketplace after admin approval.');
+    }
+
+    // Load gigs on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        loadGigs();
+    });
+
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-5CWZLH3H6H');
+
+    // ===== GIG MARKETPLACE =====
+    const SHEET_ID = '1YwKvlmI5DvPMBE-u9of9WPXAT57SLFWSrZDEsCuzvMs';
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Gigs`;
+    const FORM_URL = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
+
+    let allGigs = [];
+    let currentFilter = 'All';
+
+    // Load gigs from Google Sheet
+    async function loadGigs() {
+        const grid = document.getElementById('gigGrid');
+        try {
+            const res = await fetch(SHEET_URL);
+            const text = await res.text();
+            const json = JSON.parse(text.match(/google.visualization.Query.setResponse\((.*)\)/s)[1]);
+            const rows = json.table.rows;
+
+            if (!rows || rows.length === 0) {
+                showSampleGigs();
+                return;
+            }
+
+            allGigs = rows.map(row => ({
+                name: row.c[0]?.v || '',
+                category: row.c[1]?.v || 'Other',
+                title: row.c[2]?.v || '',
+                desc: row.c[3]?.v || '',
+                rate: row.c[4]?.v || '',
+                contact: row.c[5]?.v || '',
+                approved: row.c[6]?.v || 'Yes'
+            })).filter(g => g.approved === 'Yes' && g.title);
+
+            if (allGigs.length === 0) {
+                showSampleGigs();
+            } else {
+                renderGigs(allGigs);
+            }
+        } catch(e) {
+            showSampleGigs();
+        }
+    }
+
+    function showSampleGigs() {
+        allGigs = [
+            { name: 'Ahmed K.', category: 'Web Development', title: 'I will build your professional website', desc: 'Full stack web development using HTML, CSS, JavaScript and modern frameworks. Fast delivery guaranteed.', rate: '$30/page', contact: 'Contact via platform' },
+            { name: 'Sara M.', category: 'Graphic Design', title: 'I will design stunning logos and branding', desc: 'Professional logo design, brand identity, business cards and social media graphics. Unlimited revisions.', rate: '$15/logo', contact: 'Contact via platform' },
+            { name: 'Ali R.', category: 'Content Writing', title: 'I will write SEO blog articles', desc: 'High quality, plagiarism-free articles optimized for Google. English and Urdu content available.', rate: '$8/article', contact: 'Contact via platform' },
+            { name: 'Fatima H.', category: 'Digital Marketing', title: 'I will manage your social media pages', desc: 'Complete social media management including content creation, posting schedule and audience growth strategy.', rate: '$50/month', contact: 'Contact via platform' },
+            { name: 'Usman T.', category: 'Video Editing', title: 'I will edit your YouTube videos professionally', desc: 'Professional video editing with transitions, color grading, subtitles and thumbnail design included.', rate: '$20/video', contact: 'Contact via platform' },
+            { name: 'Zara B.', category: 'AI Services', title: 'I will create AI powered chatbots for your business', desc: 'Custom AI chatbot development for websites and WhatsApp. Automate customer support and lead generation.', rate: '$100/bot', contact: 'Contact via platform' }
+        ];
+        renderGigs(allGigs);
+    }
+
+    function renderGigs(gigs) {
+        const grid = document.getElementById('gigGrid');
+        const filtered = currentFilter === 'All' ? gigs : gigs.filter(g => g.category === currentFilter);
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="market-empty"><span style="font-size:40px">😔</span><br>No gigs in this category yet.<br><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:15px">Be the first to post!</button></div>';
+            return;
+        }
+
+        const emojis = {'Web Development':'💻','Graphic Design':'🎨','Content Writing':'✍️','Digital Marketing':'📱','Video Editing':'🎬','Data Entry':'📊','AI Services':'🤖','Other':'⚡'};
+
+        grid.innerHTML = filtered.map(g => `
+            <div class="gig-card">
+                <div class="gig-category">${emojis[g.category] || '⚡'} ${escapeHtml(g.category)}</div>
+                <div class="gig-title">${escapeHtml(g.title)}</div>
+                <div class="gig-seller">👤 ${escapeHtml(g.name)}</div>
+                <div class="gig-desc">${escapeHtml(g.desc)}</div>
+                <div class="gig-footer">
+                    <span class="gig-rate">💰 ${escapeHtml(g.rate)}</span>
+                    <a class="gig-contact" href="mailto:${escapeHtml(g.contact)}" onclick="handleContact(event, '${escapeHtml(g.contact)}')">Contact ➤</a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function handleContact(e, contact) {
+        if (contact === 'Contact via platform') {
+            e.preventDefault();
+            alert('Please use the Community Board to contact this freelancer!');
+        }
+    }
+
+    function filterGigs(btn, category) {
+        document.querySelectorAll('.market-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = category;
+        renderGigs(allGigs);
+    }
+
+    function openGigForm() {
+        document.getElementById('gigFormOverlay').classList.add('visible');
+    }
+
+    function closeGigForm() {
+        document.getElementById('gigFormOverlay').classList.remove('visible');
+    }
+
+    async function submitGig() {
+        const name = document.getElementById('gigName').value.trim();
+        const category = document.getElementById('gigCategory').value;
+        const title = document.getElementById('gigTitle').value.trim();
+        const desc = document.getElementById('gigDesc').value.trim();
+        const rate = document.getElementById('gigRate').value.trim();
+        const contact = document.getElementById('gigContact').value.trim();
+
+        if (!name || !title || !desc || !rate || !contact) {
+            alert('Please fill all fields!');
+            return;
+        }
+
+        // Add to local display immediately
+        const newGig = { name, category, title, desc, rate, contact };
+        allGigs.unshift(newGig);
+        renderGigs(allGigs);
+        closeGigForm();
+
+        // Clear form
+        ['gigName','gigTitle','gigDesc','gigRate','gigContact'].forEach(id => document.getElementById(id).value = '');
+
+        alert('✅ Your gig has been posted! It will appear in the marketplace after admin approval.');
+    }
+
+    // Load gigs on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        loadGigs();
+    });
+
 </script>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -501,6 +765,36 @@
         .feed-empty .big-icon { font-size: 48px; margin-bottom: 10px; display: block; }
         .feed-loading { display: none; text-align: center; padding: 30px; color: var(--ai-purple); font-weight: 600; font-size: 14px; }
         .feed-loading.visible { display: block; }
+
+        /* ===== GIG MARKETPLACE ===== */
+        .marketplace-card { border-top: 5px solid #00cec9; grid-column: 1 / -1; }
+        .market-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .market-tab { padding: 8px 18px; border-radius: 20px; border: 2px solid #00cec9; background: transparent; color: #00cec9; font-weight: 700; font-size: 12px; cursor: pointer; font-family: 'Exo 2', sans-serif; transition: all 0.2s; width: auto; }
+        .market-tab.active, .market-tab:hover { background: #00cec9; color: white; }
+        .gig-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }
+        .gig-card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 3px 12px rgba(0,0,0,0.07); border: 1px solid #e8f8f8; transition: transform 0.2s; animation: fadeIn 0.4s ease; }
+        .gig-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+        .gig-category { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #00cec9; margin-bottom: 6px; }
+        .gig-title { font-size: 15px; font-weight: 800; color: var(--main-blue); margin-bottom: 8px; line-height: 1.4; }
+        .gig-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
+        .gig-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .gig-rate { font-size: 16px; font-weight: 900; color: var(--main-blue); }
+        .gig-contact { padding: 8px 16px; background: linear-gradient(135deg, #00cec9, #6c5ce7); color: white; border: none; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Exo 2', sans-serif; width: auto; transition: all 0.2s; text-decoration: none; }
+        .gig-contact:hover { transform: scale(1.05); }
+        .gig-seller { font-size: 12px; color: #888; margin-bottom: 10px; }
+        .post-gig-btn { padding: 12px 28px; background: linear-gradient(135deg, #00cec9, #6c5ce7); color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: 'Exo 2', sans-serif; transition: all 0.2s; width: auto; }
+        .post-gig-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,206,201,0.4); }
+        .gig-form-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .gig-form-overlay.visible { display: flex; }
+        .gig-form-box { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        .gig-form-box h3 { color: var(--main-blue); margin-bottom: 20px; font-size: 18px; }
+        .gig-form-box input, .gig-form-box textarea, .gig-form-box select { width: 100%; padding: 11px 14px; margin: 7px 0; border: 2px solid #e0f7f7; border-radius: 8px; font-size: 13px; font-family: 'Exo 2', sans-serif; outline: none; }
+        .gig-form-box input:focus, .gig-form-box textarea:focus { border-color: #00cec9; }
+        .gig-submit-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, #00cec9, #6c5ce7); color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: 'Exo 2', sans-serif; margin-top: 10px; }
+        .gig-close-btn { float: right; background: none; border: none; font-size: 22px; cursor: pointer; color: #888; width: auto; padding: 0; }
+        .market-empty { text-align: center; padding: 40px; color: var(--text-muted); grid-column: 1/-1; }
+        .market-loading { text-align: center; padding: 30px; color: #00cec9; font-weight: 600; grid-column: 1/-1; }
+        .gig-badge { display: inline-block; padding: 3px 10px; background: #e0f7f7; color: #00cec9; border-radius: 10px; font-size: 11px; font-weight: 700; margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -511,6 +805,7 @@
     <a href="#about">About</a>
     <a href="#ai-lab">AI Lab</a>
     <a href="#feed">Daily Feed</a>
+    <a href="#marketplace">Gig Market</a>
     <a href="#vault">Project Vault</a>
     <a href="#board">Community Board</a>
     <a href="#payments">Payments</a>
@@ -668,6 +963,59 @@
 
 </div>
 
+
+
+    <!-- GIG MARKETPLACE -->
+    <div class="card marketplace-card" id="marketplace">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:8px;">
+            <div>
+                <h2>💼 Freelancer Gig Marketplace</h2>
+                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Find skilled Pakistani freelancers — Zero commission, Direct contact</p>
+            </div>
+            <button class="post-gig-btn" onclick="openGigForm()">+ Post Your Gig</button>
+        </div>
+
+        <div class="market-tabs" id="marketTabs">
+            <button class="market-tab active" onclick="filterGigs(this,'All')">🌐 All</button>
+            <button class="market-tab" onclick="filterGigs(this,'Web Development')">💻 Web Dev</button>
+            <button class="market-tab" onclick="filterGigs(this,'Graphic Design')">🎨 Design</button>
+            <button class="market-tab" onclick="filterGigs(this,'Content Writing')">✍️ Writing</button>
+            <button class="market-tab" onclick="filterGigs(this,'Digital Marketing')">📱 Marketing</button>
+            <button class="market-tab" onclick="filterGigs(this,'Video Editing')">🎬 Video</button>
+            <button class="market-tab" onclick="filterGigs(this,'Data Entry')">📊 Data Entry</button>
+            <button class="market-tab" onclick="filterGigs(this,'AI Services')">🤖 AI Services</button>
+        </div>
+
+        <div class="gig-grid" id="gigGrid">
+            <div class="market-loading">Loading gigs... ⏳</div>
+        </div>
+    </div>
+
+    <!-- GIG FORM OVERLAY -->
+    <div class="gig-form-overlay" id="gigFormOverlay">
+        <div class="gig-form-box">
+            <button class="gig-close-btn" onclick="closeGigForm()">✕</button>
+            <h3>🚀 Post Your Gig</h3>
+            <p style="font-size:12px; color:#888; margin-bottom:15px;">Fill in your details — your gig will appear in the marketplace!</p>
+            <input type="text" id="gigName" placeholder="Your Name *" required>
+            <select id="gigCategory">
+                <option value="Web Development">💻 Web Development</option>
+                <option value="Graphic Design">🎨 Graphic Design</option>
+                <option value="Content Writing">✍️ Content Writing</option>
+                <option value="Digital Marketing">📱 Digital Marketing</option>
+                <option value="Video Editing">🎬 Video Editing</option>
+                <option value="Data Entry">📊 Data Entry</option>
+                <option value="AI Services">🤖 AI Services</option>
+                <option value="Other">⚡ Other</option>
+            </select>
+            <input type="text" id="gigTitle" placeholder="Gig Title e.g. I will design your logo *" required>
+            <textarea id="gigDesc" rows="4" placeholder="Describe your service... *" required></textarea>
+            <input type="text" id="gigRate" placeholder="Your Rate e.g. $10/hour or $50/project *" required>
+            <input type="text" id="gigContact" placeholder="WhatsApp or Email for clients *" required>
+            <button class="gig-submit-btn" onclick="submitGig()">🚀 Post My Gig</button>
+            <p style="font-size:11px; color:#aaa; margin-top:10px; text-align:center;">Your contact info will only be shown to interested clients</p>
+        </div>
+    </div>
 
     <!-- ABOUT US -->
     <div class="card" id="about" style="grid-column: 1 / -1; background: linear-gradient(135deg, #0d1a4a, #1a2a6c); color: white;">
@@ -912,6 +1260,138 @@
         feedBtn.innerHTML = '✨ Generate Today\'s Content';
         feedBtn.disabled = false;
     }
+
+
+    // ===== GIG MARKETPLACE =====
+    const SHEET_ID = '1YwKvlmI5DvPMBE-u9of9WPXAT57SLFWSrZDEsCuzvMs';
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Gigs`;
+    const FORM_URL = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
+
+    let allGigs = [];
+    let currentFilter = 'All';
+
+    // Load gigs from Google Sheet
+    async function loadGigs() {
+        const grid = document.getElementById('gigGrid');
+        try {
+            const res = await fetch(SHEET_URL);
+            const text = await res.text();
+            const json = JSON.parse(text.match(/google.visualization.Query.setResponse\((.*)\)/s)[1]);
+            const rows = json.table.rows;
+
+            if (!rows || rows.length === 0) {
+                showSampleGigs();
+                return;
+            }
+
+            allGigs = rows.map(row => ({
+                name: row.c[0]?.v || '',
+                category: row.c[1]?.v || 'Other',
+                title: row.c[2]?.v || '',
+                desc: row.c[3]?.v || '',
+                rate: row.c[4]?.v || '',
+                contact: row.c[5]?.v || '',
+                approved: row.c[6]?.v || 'Yes'
+            })).filter(g => g.approved === 'Yes' && g.title);
+
+            if (allGigs.length === 0) {
+                showSampleGigs();
+            } else {
+                renderGigs(allGigs);
+            }
+        } catch(e) {
+            showSampleGigs();
+        }
+    }
+
+    function showSampleGigs() {
+        allGigs = [
+            { name: 'Ahmed K.', category: 'Web Development', title: 'I will build your professional website', desc: 'Full stack web development using HTML, CSS, JavaScript and modern frameworks. Fast delivery guaranteed.', rate: '$30/page', contact: 'Contact via platform' },
+            { name: 'Sara M.', category: 'Graphic Design', title: 'I will design stunning logos and branding', desc: 'Professional logo design, brand identity, business cards and social media graphics. Unlimited revisions.', rate: '$15/logo', contact: 'Contact via platform' },
+            { name: 'Ali R.', category: 'Content Writing', title: 'I will write SEO blog articles', desc: 'High quality, plagiarism-free articles optimized for Google. English and Urdu content available.', rate: '$8/article', contact: 'Contact via platform' },
+            { name: 'Fatima H.', category: 'Digital Marketing', title: 'I will manage your social media pages', desc: 'Complete social media management including content creation, posting schedule and audience growth strategy.', rate: '$50/month', contact: 'Contact via platform' },
+            { name: 'Usman T.', category: 'Video Editing', title: 'I will edit your YouTube videos professionally', desc: 'Professional video editing with transitions, color grading, subtitles and thumbnail design included.', rate: '$20/video', contact: 'Contact via platform' },
+            { name: 'Zara B.', category: 'AI Services', title: 'I will create AI powered chatbots for your business', desc: 'Custom AI chatbot development for websites and WhatsApp. Automate customer support and lead generation.', rate: '$100/bot', contact: 'Contact via platform' }
+        ];
+        renderGigs(allGigs);
+    }
+
+    function renderGigs(gigs) {
+        const grid = document.getElementById('gigGrid');
+        const filtered = currentFilter === 'All' ? gigs : gigs.filter(g => g.category === currentFilter);
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="market-empty"><span style="font-size:40px">😔</span><br>No gigs in this category yet.<br><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:15px">Be the first to post!</button></div>';
+            return;
+        }
+
+        const emojis = {'Web Development':'💻','Graphic Design':'🎨','Content Writing':'✍️','Digital Marketing':'📱','Video Editing':'🎬','Data Entry':'📊','AI Services':'🤖','Other':'⚡'};
+
+        grid.innerHTML = filtered.map(g => `
+            <div class="gig-card">
+                <div class="gig-category">${emojis[g.category] || '⚡'} ${escapeHtml(g.category)}</div>
+                <div class="gig-title">${escapeHtml(g.title)}</div>
+                <div class="gig-seller">👤 ${escapeHtml(g.name)}</div>
+                <div class="gig-desc">${escapeHtml(g.desc)}</div>
+                <div class="gig-footer">
+                    <span class="gig-rate">💰 ${escapeHtml(g.rate)}</span>
+                    <a class="gig-contact" href="mailto:${escapeHtml(g.contact)}" onclick="handleContact(event, '${escapeHtml(g.contact)}')">Contact ➤</a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function handleContact(e, contact) {
+        if (contact === 'Contact via platform') {
+            e.preventDefault();
+            alert('Please use the Community Board to contact this freelancer!');
+        }
+    }
+
+    function filterGigs(btn, category) {
+        document.querySelectorAll('.market-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = category;
+        renderGigs(allGigs);
+    }
+
+    function openGigForm() {
+        document.getElementById('gigFormOverlay').classList.add('visible');
+    }
+
+    function closeGigForm() {
+        document.getElementById('gigFormOverlay').classList.remove('visible');
+    }
+
+    async function submitGig() {
+        const name = document.getElementById('gigName').value.trim();
+        const category = document.getElementById('gigCategory').value;
+        const title = document.getElementById('gigTitle').value.trim();
+        const desc = document.getElementById('gigDesc').value.trim();
+        const rate = document.getElementById('gigRate').value.trim();
+        const contact = document.getElementById('gigContact').value.trim();
+
+        if (!name || !title || !desc || !rate || !contact) {
+            alert('Please fill all fields!');
+            return;
+        }
+
+        // Add to local display immediately
+        const newGig = { name, category, title, desc, rate, contact };
+        allGigs.unshift(newGig);
+        renderGigs(allGigs);
+        closeGigForm();
+
+        // Clear form
+        ['gigName','gigTitle','gigDesc','gigRate','gigContact'].forEach(id => document.getElementById(id).value = '');
+
+        alert('✅ Your gig has been posted! It will appear in the marketplace after admin approval.');
+    }
+
+    // Load gigs on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        loadGigs();
+    });
 
 </script>
 
