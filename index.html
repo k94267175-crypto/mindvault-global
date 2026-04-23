@@ -6,6 +6,10 @@
     <title>Mind Vault Global | AI Hub & Business Marketplace</title>
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CWZLH3H6H">
+    function escapeHtml(text) {
+        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    }
+
     // ===== GIG MARKETPLACE =====
     const SHEET_ID = '1YwKvlmI5DvPMBE-u9of9WPXAT57SLFWSrZDEsCuzvMs';
     const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Gigs`;
@@ -143,6 +147,10 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-5CWZLH3H6H');
+
+    function escapeHtml(text) {
+        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    }
 
     // ===== GIG MARKETPLACE =====
     const SHEET_ID = '1YwKvlmI5DvPMBE-u9of9WPXAT57SLFWSrZDEsCuzvMs';
@@ -1151,9 +1159,6 @@
         box.scrollTop = box.scrollHeight;
     }
 
-    function escapeHtml(text) {
-        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-    }
 
     // ===== IMAGE DESCRIPTION =====
     function fillPrompt(text) {
@@ -1261,6 +1266,10 @@
         feedBtn.disabled = false;
     }
 
+
+    function escapeHtml(text) {
+        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    }
 
     // ===== GIG MARKETPLACE =====
     const SHEET_ID = '1YwKvlmI5DvPMBE-u9of9WPXAT57SLFWSrZDEsCuzvMs';
