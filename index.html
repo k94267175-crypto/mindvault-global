@@ -149,7 +149,7 @@
 <header>
     <div class="logo-circle"><span class="logo-text">MVG</span></div>
     <h1>MIND VAULT GLOBAL</h1>
-    <p>Empowering Innovation | AI Solutions & Global Business Hub 🌍</p>
+    <p>Pakistan's Premier AI Hub & Freelance Marketplace 🌍</p>
 </header>
 
 <section class="stats-bar">
@@ -304,10 +304,10 @@
     <div class="card" id="about" style="grid-column:1/-1;background:linear-gradient(135deg,#0d1a4a,#1a2a6c);color:white;">
         <h2 style="color:var(--gold);">🌍 About Mind Vault Global</h2>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;margin-top:20px;">
-            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Who We Are</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">Mind Vault Global is a Pakistani-based AI Hub and Business Marketplace dedicated to empowering entrepreneurs, freelancers, and innovators across the globe.</p></div>
-            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Our Mission</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">To provide free, accessible AI tools and a global platform for Pakistani entrepreneurs to connect, collaborate, and grow their businesses beyond borders.</p></div>
-            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">What We Offer</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">Free AI-powered chat assistant, daily innovation content, a global project marketplace, and a community bulletin board.</p></div>
-            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Contact Us</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">📧 mindvaultglobal1@gmail.com<br>🌍 Pakistan 🇵🇰 | 15+ Countries</p></div>
+            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Who We Are</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">Mind Vault Global is a Pakistani-based AI Hub and Freelance Marketplace. We help Pakistani freelancers connect with global clients — with zero commission and full transparency.</p></div>
+            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Our Mission</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">To give Pakistani talent a fair platform where they keep 100% of their earnings, access free AI tools, and build global connections without paying hefty platform fees.</p></div>
+            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Why Choose Us</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">✅ Zero Commission &nbsp;✅ Free AI Tools &nbsp;✅ JazzCash & EasyPaisa &nbsp;✅ Direct Client Contact &nbsp;✅ Pakistani Community</p></div>
+            <div><h3 style="color:var(--gold);font-size:16px;margin-bottom:10px;">Contact Us</h3><p style="font-size:14px;opacity:0.9;line-height:1.8;">📧 mindvaultglobal1@gmail.com<br>🌍 Based in Pakistan 🇵🇰<br>Serving clients worldwide</p></div>
         </div>
     </div>
 
@@ -518,15 +518,8 @@
     }
 
     function showSampleGigs() {
-        allGigs = [
-            { name:'Ahmed K.', category:'Web Development', title:'I will build your professional website', desc:'Full stack web development using HTML, CSS, JavaScript. Fast delivery guaranteed.', rate:'$30/page', contact:'Contact via platform' },
-            { name:'Sara M.', category:'Graphic Design', title:'I will design stunning logos and branding', desc:'Professional logo design with unlimited revisions. All formats included.', rate:'$15/logo', contact:'Contact via platform' },
-            { name:'Ali R.', category:'Content Writing', title:'I will write SEO blog articles', desc:'High quality plagiarism-free articles in English and Urdu.', rate:'$8/article', contact:'Contact via platform' },
-            { name:'Fatima H.', category:'Digital Marketing', title:'I will manage your social media pages', desc:'Complete social media management including content and posting schedule.', rate:'$50/month', contact:'Contact via platform' },
-            { name:'Usman T.', category:'Video Editing', title:'I will edit your YouTube videos professionally', desc:'Professional editing with transitions, color grading and subtitles.', rate:'$20/video', contact:'Contact via platform' },
-            { name:'Zara B.', category:'AI Services', title:'I will create AI chatbots for your business', desc:'Custom AI chatbot for websites and WhatsApp. 24/7 support.', rate:'$100/bot', contact:'Contact via platform' }
-        ];
-        renderGigs(allGigs);
+        const grid = document.getElementById('gigGrid');
+        grid.innerHTML = '<div class="market-empty" style="grid-column:1/-1; text-align:center; padding:40px;"><span style="font-size:48px">💼</span><br><br><strong style="font-size:16px; color:var(--main-blue);">No Gigs Posted Yet</strong><br><p style="color:var(--text-muted); margin-top:10px; font-size:14px;">Be the first Pakistani freelancer to post your gig!<br>Zero commission — keep 100% of your earnings.</p><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:20px;">+ Post Your Gig Now</button></div>';
     }
 
     function renderGigs(gigs) {
