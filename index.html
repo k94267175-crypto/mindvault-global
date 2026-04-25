@@ -5,13 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mind Vault Global | AI Hub & Business Marketplace</title>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CWZLH3H6H"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CWZLH3H6H">
+    // ===== WELCOME POPUP =====
+    function closeWelcome() {
+        document.getElementById('welcomeOverlay').classList.remove('visible');
+        localStorage.setItem('mvg_welcomed', 'yes');
+    }
+
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            if (!localStorage.getItem('mvg_welcomed')) {
+                document.getElementById('welcomeOverlay').classList.add('visible');
+            }
+        }, 1000);
+    });
+
+</script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-5CWZLH3H6H');
-    </script>
+    
+    // ===== WELCOME POPUP =====
+    function closeWelcome() {
+        document.getElementById('welcomeOverlay').classList.remove('visible');
+        localStorage.setItem('mvg_welcomed', 'yes');
+    }
+
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            if (!localStorage.getItem('mvg_welcomed')) {
+                document.getElementById('welcomeOverlay').classList.add('visible');
+            }
+        }, 1000);
+    });
+
+</script>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --main-blue:#1a2a6c; --deep-blue:#0d1a4a; --gold:#fdbb2d; --gold-dark:#e0a020; --ai-purple:#6c5ce7; --ai-cyan:#00cec9; --light-bg:#f0f4ff; --card-bg:#ffffff; --text-main:#1a1a2e; --text-muted:#666; }
@@ -129,6 +159,23 @@
         .board-msg-time { font-size:11px; color:#aaa; }
         .board-msg-country { font-size:11px; background:#e8f0ff; color:var(--main-blue); padding:2px 8px; border-radius:10px; font-weight:600; }
         .board-msg-text { font-size:14px; color:var(--text-main); line-height:1.6; }
+
+        /* ===== WELCOME POPUP ===== */
+        .welcome-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; }
+        .welcome-overlay.visible { display:flex; }
+        .welcome-box { background:white; border-radius:20px; padding:35px; width:90%; max-width:520px; text-align:center; position:relative; animation:fadeIn 0.4s ease; }
+        .welcome-box h2 { color:var(--main-blue); font-size:22px; margin-bottom:8px; }
+        .welcome-box p { color:var(--text-muted); font-size:14px; margin-bottom:20px; }
+        .welcome-steps { display:flex; flex-direction:column; gap:12px; margin-bottom:25px; text-align:left; }
+        .welcome-step { display:flex; align-items:center; gap:12px; background:#f0f4ff; border-radius:10px; padding:12px 15px; }
+        .welcome-step-icon { font-size:24px; min-width:35px; text-align:center; }
+        .welcome-step-text { font-size:13px; color:var(--text-main); line-height:1.5; }
+        .welcome-step-text strong { color:var(--main-blue); display:block; margin-bottom:2px; }
+        .welcome-start-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--main-blue),#2a48ad); color:white; border:none; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; }
+        .welcome-start-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(26,42,108,0.3); }
+        .welcome-skip { font-size:12px; color:#aaa; cursor:pointer; margin-top:12px; display:block; }
+        .welcome-skip:hover { color:var(--text-muted); }
+        .welcome-logo { font-size:50px; margin-bottom:10px; }
     </style>
 </head>
 <body>
@@ -658,6 +705,65 @@
         loadMessages();
     });
 
+
+    // ===== WELCOME POPUP =====
+    function closeWelcome() {
+        document.getElementById('welcomeOverlay').classList.remove('visible');
+        localStorage.setItem('mvg_welcomed', 'yes');
+    }
+
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            if (!localStorage.getItem('mvg_welcomed')) {
+                document.getElementById('welcomeOverlay').classList.add('visible');
+            }
+        }, 1000);
+    });
+
 </script>
+
+<!-- WELCOME POPUP -->
+<div class="welcome-overlay" id="welcomeOverlay">
+    <div class="welcome-box">
+        <div class="welcome-logo">🤖</div>
+        <h2>Welcome to Mind Vault Global! 🇵🇰</h2>
+        <p>Pakistan's AI Hub & Freelance Marketplace — 100% Free!</p>
+        
+        <div class="welcome-steps">
+            <div class="welcome-step">
+                <div class="welcome-step-icon">💬</div>
+                <div class="welcome-step-text">
+                    <strong>Free AI Chat</strong>
+                    Ask anything — business ideas, project help, career advice. No signup needed!
+                </div>
+            </div>
+            <div class="welcome-step">
+                <div class="welcome-step-icon">💼</div>
+                <div class="welcome-step-text">
+                    <strong>Post Your Gig — Zero Commission</strong>
+                    List your skills and connect directly with global clients. Keep 100% of earnings!
+                </div>
+            </div>
+            <div class="welcome-step">
+                <div class="welcome-step-icon">📰</div>
+                <div class="welcome-step-text">
+                    <strong>Daily Innovation Feed</strong>
+                    Get fresh business tips, AI trends and market opportunities every day!
+                </div>
+            </div>
+            <div class="welcome-step">
+                <div class="welcome-step-icon">📢</div>
+                <div class="welcome-step-text">
+                    <strong>Community Board</strong>
+                    Connect with Pakistani entrepreneurs and global business people!
+                </div>
+            </div>
+        </div>
+        
+        <button class="welcome-start-btn" onclick="closeWelcome()">🚀 Start Exploring — It's Free!</button>
+        <span class="welcome-skip" onclick="closeWelcome()">Skip for now</span>
+    </div>
+</div>
+
 </body>
 </html>
