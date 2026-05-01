@@ -4,47 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mind Vault Global | AI Hub & Business Marketplace</title>
-<!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6290526147955467"
      crossorigin="anonymous"></script>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CWZLH3H6H">
-    // ===== WELCOME POPUP =====
-    function closeWelcome() {
-        document.getElementById('welcomeOverlay').classList.remove('visible');
-        localStorage.setItem('mvg_welcomed', 'yes');
-    }
-
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            if (!localStorage.getItem('mvg_welcomed')) {
-                document.getElementById('welcomeOverlay').classList.add('visible');
-            }
-        }, 1000);
-    });
-
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CWZLH3H6H"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-5CWZLH3H6H');
-    
-    // ===== WELCOME POPUP =====
-    function closeWelcome() {
-        document.getElementById('welcomeOverlay').classList.remove('visible');
-        localStorage.setItem('mvg_welcomed', 'yes');
-    }
-
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            if (!localStorage.getItem('mvg_welcomed')) {
-                document.getElementById('welcomeOverlay').classList.add('visible');
-            }
-        }, 1000);
-    });
-
-</script>
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --main-blue:#1a2a6c; --deep-blue:#0d1a4a; --gold:#fdbb2d; --gold-dark:#e0a020; --ai-purple:#6c5ce7; --ai-cyan:#00cec9; --light-bg:#f0f4ff; --card-bg:#ffffff; --text-main:#1a1a2e; --text-muted:#666; }
@@ -104,12 +72,9 @@
         .vault-form input,.vault-form textarea,.vault-form select { width:100%; padding:12px 15px; margin:8px 0; border:2px solid #e5e8f0; border-radius:10px; font-size:14px; font-family:'Exo 2',sans-serif; background:#fafbff; transition:border 0.2s; outline:none; }
         .vault-form button { width:100%; padding:14px; background:linear-gradient(135deg,var(--main-blue),#2a48ad); color:white; border:none; border-radius:10px; font-weight:800; font-size:15px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; margin-top:5px; }
         .terms-note { font-size:11px; color:#d63031; font-weight:700; margin-bottom:14px; padding:10px; background:#fff5f5; border-radius:8px; border-left:3px solid #d63031; }
-        .bulletin-frame { width:100%; min-height:450px; border-radius:12px; border:none; background:white; }
         .payments-section { grid-column:1/-1; text-align:center; background:linear-gradient(135deg,#f0f4ff,#e8ecff); border-top:5px solid var(--gold); }
         .payment-methods { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-top:15px; }
         .pay-badge { padding:10px 22px; background:white; border-radius:30px; font-weight:700; font-size:14px; color:var(--main-blue); box-shadow:0 3px 10px rgba(0,0,0,0.08); border:2px solid #e0e8ff; }
-        .whatsapp-float { position:fixed; bottom:22px; right:22px; background:#25d366; color:white; width:58px; height:58px; border-radius:50%; font-size:26px; box-shadow:0 4px 15px rgba(37,211,102,0.4); z-index:1000; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:transform 0.2s; }
-        .whatsapp-float:hover { transform:scale(1.1); }
         footer { text-align:center; padding:35px; color:var(--text-muted); font-size:13px; border-top:1px solid #e0e8ff; background:white; }
         .spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.4); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
         @keyframes spin { to{transform:rotate(360deg);} }
@@ -142,7 +107,7 @@
         .gig-desc { font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:12px; }
         .gig-footer { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
         .gig-rate { font-size:16px; font-weight:900; color:var(--main-blue); }
-        .gig-contact { padding:8px 16px; background:linear-gradient(135deg,#00cec9,#6c5ce7); color:white; border:none; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Exo 2',sans-serif; width:auto; transition:all 0.2s; text-decoration:none; }
+        .gig-contact { padding:8px 16px; background:linear-gradient(135deg,#00cec9,#6c5ce7); color:white; border:none; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Exo 2',sans-serif; width:auto; transition:all 0.2s; text-decoration:none; display:inline-block; }
         .gig-seller { font-size:12px; color:#888; margin-bottom:10px; }
         .post-gig-btn { padding:12px 28px; background:linear-gradient(135deg,#00cec9,#6c5ce7); color:white; border:none; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; width:auto; }
         .gig-form-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; }
@@ -154,16 +119,12 @@
         .gig-close-btn { float:right; background:none; border:none; font-size:22px; cursor:pointer; color:#888; width:auto; padding:0; }
         .market-empty { text-align:center; padding:40px; color:var(--text-muted); grid-column:1/-1; }
         @media(max-width:600px) { .chat-input-row{flex-direction:column;} .img-prompt-row{flex-direction:column;} }
-
-        /* ===== COMMUNITY BOARD ===== */
         .board-msg { background:white; border-radius:12px; padding:16px; border-left:4px solid var(--main-blue); box-shadow:0 2px 8px rgba(0,0,0,0.05); animation:fadeIn 0.3s ease; }
         .board-msg-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:5px; }
         .board-msg-name { font-weight:800; font-size:14px; color:var(--main-blue); }
         .board-msg-time { font-size:11px; color:#aaa; }
         .board-msg-country { font-size:11px; background:#e8f0ff; color:var(--main-blue); padding:2px 8px; border-radius:10px; font-weight:600; }
         .board-msg-text { font-size:14px; color:var(--text-main); line-height:1.6; }
-
-        /* ===== WELCOME POPUP ===== */
         .welcome-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; }
         .welcome-overlay.visible { display:flex; }
         .welcome-box { background:white; border-radius:20px; padding:35px; width:90%; max-width:520px; text-align:center; position:relative; animation:fadeIn 0.4s ease; }
@@ -179,11 +140,13 @@
         .welcome-skip { font-size:12px; color:#aaa; cursor:pointer; margin-top:12px; display:block; }
         .welcome-skip:hover { color:var(--text-muted); }
         .welcome-logo { font-size:50px; margin-bottom:10px; }
+        /* SUCCESS TOAST */
+        .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:#00b894; color:white; padding:14px 28px; border-radius:30px; font-weight:700; font-size:14px; z-index:9999; transition:transform 0.4s ease; box-shadow:0 4px 20px rgba(0,184,148,0.4); }
+        .toast.show { transform:translateX(-50%) translateY(0); }
+        .toast.error { background:#d63031; }
     </style>
 </head>
 <body>
-
-
 
 <nav>
     <a href="#about">About</a>
@@ -274,8 +237,6 @@
     <div class="card" id="board" style="grid-column:1/-1;">
         <h2>📢 Community Bulletin Board</h2>
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Share ideas, ask questions, connect with entrepreneurs worldwide! 🌍</p>
-        
-        <!-- POST MESSAGE FORM -->
         <div style="background:#f0f4ff;border-radius:12px;padding:20px;margin-bottom:20px;">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
                 <input type="text" id="boardName" placeholder="Your Name *" style="padding:10px;border:2px solid #e0e8ff;border-radius:8px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;">
@@ -284,8 +245,6 @@
             <textarea id="boardMsg" rows="3" placeholder="Write your message, idea or question... *" style="width:100%;padding:10px;border:2px solid #e0e8ff;border-radius:8px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;resize:none;margin-bottom:10px;"></textarea>
             <button onclick="postMessage()" id="postBtn" style="padding:10px 24px;background:linear-gradient(135deg,var(--main-blue),#2a48ad);color:white;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;font-family:'Exo 2',sans-serif;width:auto;">📤 Post Message</button>
         </div>
-
-        <!-- MESSAGES FEED -->
         <div id="boardFeed" style="display:flex;flex-direction:column;gap:12px;max-height:500px;overflow-y:auto;">
             <div style="text-align:center;padding:20px;color:var(--text-muted);">Loading messages... ⏳</div>
         </div>
@@ -399,20 +358,36 @@
         <textarea id="gigDesc" rows="4" placeholder="Describe your service... *"></textarea>
         <input type="text" id="gigRate" placeholder="Your Rate e.g. $10/hour *">
         <input type="text" id="gigContact" placeholder="WhatsApp or Email *">
-        <button class="gig-submit-btn" onclick="submitGig()">🚀 Post My Gig</button>
+        <button class="gig-submit-btn" onclick="submitGig()" id="gigSubmitBtn">🚀 Post My Gig</button>
     </div>
 </div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast"></div>
 
 <footer><p>&copy; 2026 Mind Vault Global | Pakistan 🇵🇰</p></footer>
 
 <script>
+    // ===== APPS SCRIPT URLs =====
+    const COMMUNITY_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBHqaFv3wqzdwR03hkbUcgYux0LpE4h_zLJZybZr6BYZc9VxPYDq7grIel7jWThRpL/exec';
+    const GIGS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSjuQRN-4_4kHEf9bTZRRhUIuadfarThFHX93oU6bkm-gJy35ulT19jSsHR_IZR4og/exec';
+
+    // ===== TOAST =====
+    function showToast(msg, isError=false) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast' + (isError ? ' error' : '');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
     // ===== HELPER =====
     function escapeHtml(text) {
         if (!text) return '';
         return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
     }
 
-    // ===== API CALL =====
+    // ===== AI API CALL =====
     async function callAI(messages, system) {
         const response = await fetch('https://mvg-ai-worker.aimihu124.workers.dev', {
             method: 'POST',
@@ -552,38 +527,59 @@
 
     async function loadGigs() {
         try {
-            const res = await fetch(SHEET_URL);
+            const res = await fetch(SHEET_URL + '&t=' + Date.now());
             const text = await res.text();
             const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
             const rows = json.table.rows;
-            if (!rows || rows.length === 0) { showSampleGigs(); return; }
+            if (!rows || rows.length === 0) { showEmptyGigs(); return; }
             allGigs = rows.map(row => ({
-                name: row.c[0]?.v||'', category: row.c[1]?.v||'Other',
-                title: row.c[2]?.v||'', desc: row.c[3]?.v||'',
-                rate: row.c[4]?.v||'', contact: row.c[5]?.v||'',
+                name: row.c[0]?.v||'',
+                category: row.c[1]?.v||'Other',
+                title: row.c[2]?.v||'',
+                desc: row.c[3]?.v||'',
+                rate: row.c[4]?.v||'',
+                contact: row.c[5]?.v||'',
                 approved: row.c[6]?.v||'Yes'
-            })).filter(g => g.approved === 'Yes' && g.title);
-            if (allGigs.length === 0) { showSampleGigs(); } else { renderGigs(allGigs); }
-        } catch(e) { showSampleGigs(); }
+            })).filter(g => g.approved !== 'No' && g.title);
+            if (allGigs.length === 0) { showEmptyGigs(); } else { renderGigs(allGigs); }
+        } catch(e) { showEmptyGigs(); }
     }
 
-    function showSampleGigs() {
+    function showEmptyGigs() {
         const grid = document.getElementById('gigGrid');
-        grid.innerHTML = '<div class="market-empty" style="grid-column:1/-1; text-align:center; padding:40px;"><span style="font-size:48px">💼</span><br><br><strong style="font-size:16px; color:var(--main-blue);">No Gigs Posted Yet</strong><br><p style="color:var(--text-muted); margin-top:10px; font-size:14px;">Be the first Pakistani freelancer to post your gig!<br>Zero commission — keep 100% of your earnings.</p><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:20px;">+ Post Your Gig Now</button></div>';
+        grid.innerHTML = '<div class="market-empty"><span style="font-size:48px">💼</span><br><br><strong style="font-size:16px;color:var(--main-blue);">No Gigs Posted Yet</strong><br><p style="color:var(--text-muted);margin-top:10px;font-size:14px;">Be the first Pakistani freelancer to post your gig!<br>Zero commission — keep 100% of your earnings.</p><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:20px;">+ Post Your Gig Now</button></div>';
     }
 
     function renderGigs(gigs) {
         const grid = document.getElementById('gigGrid');
         const filtered = currentFilter === 'All' ? gigs : gigs.filter(g => g.category === currentFilter);
-        if (filtered.length === 0) { grid.innerHTML = '<div class="market-empty">😔<br>No gigs in this category yet.</div>'; return; }
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="market-empty">😔<br><br>No gigs in this category yet.<br><button class="post-gig-btn" onclick="openGigForm()" style="margin-top:15px;">+ Post First Gig</button></div>';
+            return;
+        }
         const emojis = {'Web Development':'💻','Graphic Design':'🎨','Content Writing':'✍️','Digital Marketing':'📱','Video Editing':'🎬','Data Entry':'📊','AI Services':'🤖','Other':'⚡'};
-        grid.innerHTML = filtered.map(g => '<div class="gig-card"><div class="gig-category">' + (emojis[g.category]||'⚡') + ' ' + escapeHtml(g.category) + '</div><div class="gig-title">' + escapeHtml(g.title) + '</div><div class="gig-seller">👤 ' + escapeHtml(g.name) + '</div><div class="gig-desc">' + escapeHtml(g.desc) + '</div><div class="gig-footer"><span class="gig-rate">💰 ' + escapeHtml(g.rate) + '</span><a class="gig-contact" href="#" onclick="handleContact(event,\'' + escapeHtml(g.contact) + '\')">Contact ➤</a></div></div>').join('');
+        grid.innerHTML = filtered.map(g => `
+            <div class="gig-card">
+                <div class="gig-category">${emojis[g.category]||'⚡'} ${escapeHtml(g.category)}</div>
+                <div class="gig-title">${escapeHtml(g.title)}</div>
+                <div class="gig-seller">👤 ${escapeHtml(g.name)}</div>
+                <div class="gig-desc">${escapeHtml(g.desc)}</div>
+                <div class="gig-footer">
+                    <span class="gig-rate">💰 ${escapeHtml(g.rate)}</span>
+                    <a class="gig-contact" href="#" onclick="handleContact(event,'${escapeHtml(g.contact)}')">Contact ➤</a>
+                </div>
+            </div>`).join('');
     }
 
     function handleContact(e, contact) {
         e.preventDefault();
-        if (contact === 'Contact via platform') { alert('Please use the Community Board to contact this freelancer!'); }
-        else { window.location.href = 'mailto:' + contact; }
+        if (!contact || contact === 'Contact via platform') {
+            alert('Please use the Community Board to contact this freelancer!');
+        } else if (contact.includes('@')) {
+            window.location.href = 'mailto:' + contact;
+        } else {
+            window.open('https://wa.me/' + contact.replace(/[^0-9]/g,''), '_blank');
+        }
     }
 
     function filterGigs(btn, category) {
@@ -596,6 +592,7 @@
     function openGigForm() { document.getElementById('gigFormOverlay').classList.add('visible'); }
     function closeGigForm() { document.getElementById('gigFormOverlay').classList.remove('visible'); }
 
+    // ===== FIXED: submitGig now saves to Google Sheet via Apps Script =====
     async function submitGig() {
         const name = document.getElementById('gigName').value.trim();
         const category = document.getElementById('gigCategory').value;
@@ -603,19 +600,46 @@
         const desc = document.getElementById('gigDesc').value.trim();
         const rate = document.getElementById('gigRate').value.trim();
         const contact = document.getElementById('gigContact').value.trim();
-        if (!name||!title||!desc||!rate||!contact) { alert('Please fill all fields!'); return; }
-        allGigs.unshift({ name, category, title, desc, rate, contact });
-        renderGigs(allGigs);
-        closeGigForm();
-        ['gigName','gigTitle','gigDesc','gigRate','gigContact'].forEach(id => document.getElementById(id).value = '');
-        alert('✅ Your gig has been posted!');
-    }
 
+        if (!name || !title || !desc || !rate || !contact) {
+            showToast('⚠️ Please fill all fields!', true);
+            return;
+        }
+
+        const submitBtn = document.getElementById('gigSubmitBtn');
+        submitBtn.innerHTML = '<span class="spinner"></span>Saving...';
+        submitBtn.disabled = true;
+
+        try {
+            // Save to Google Sheet via Apps Script
+            await fetch(GIGS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, category, title, desc, rate, contact, approved: 'Yes' })
+            });
+
+            // Also show locally immediately
+            allGigs.unshift({ name, category, title, desc, rate, contact, approved: 'Yes' });
+            renderGigs(allGigs);
+            closeGigForm();
+
+            // Clear form
+            ['gigName','gigTitle','gigDesc','gigRate','gigContact'].forEach(id => document.getElementById(id).value = '');
+
+            showToast('✅ Gig posted successfully! Visible to all visitors.');
+
+        } catch(err) {
+            showToast('⚠️ Error saving gig. Please try again.', true);
+        }
+
+        submitBtn.innerHTML = '🚀 Post My Gig';
+        submitBtn.disabled = false;
+    }
 
     // ===== COMMUNITY BOARD =====
     const COMMUNITY_SHEET_ID = '1X9NvyhMkDEU-uKnw-60o3PHLUWjV6A6NxiPV0aG2FmA';
     const COMMUNITY_URL = 'https://docs.google.com/spreadsheets/d/' + COMMUNITY_SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Sheet1';
-    const COMMUNITY_FORM = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
 
     async function loadMessages() {
         const feed = document.getElementById('boardFeed');
@@ -655,20 +679,23 @@
         }
     }
 
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBHqaFv3wqzdwR03hkbUcgYux0LpE4h_zLJZybZr6BYZc9VxPYDq7grIel7jWThRpL/exec';
-
+    // ===== FIXED: postMessage saves to Google Sheet =====
     async function postMessage() {
         const name = document.getElementById('boardName').value.trim();
         const country = document.getElementById('boardCountry').value.trim();
         const msg = document.getElementById('boardMsg').value.trim();
-        if (!name || !msg) { alert('Please enter your name and message!'); return; }
+
+        if (!name || !msg) {
+            showToast('⚠️ Please enter your name and message!', true);
+            return;
+        }
 
         const postBtn = document.getElementById('postBtn');
         postBtn.innerHTML = '<span class="spinner"></span>Posting...';
         postBtn.disabled = true;
 
         try {
-            await fetch(APPS_SCRIPT_URL, {
+            await fetch(COMMUNITY_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
@@ -676,7 +703,7 @@
             });
         } catch(e) {}
 
-        // Show message locally immediately
+        // Show locally immediately
         const feed = document.getElementById('boardFeed');
         const div = document.createElement('div');
         div.className = 'board-msg';
@@ -690,24 +717,30 @@
             </div>
             <div class="board-msg-text">${escapeHtml(msg)}</div>
         `;
-        if (feed.firstChild) { feed.insertBefore(div, feed.firstChild); } else { feed.appendChild(div); }
+        if (feed.firstChild && !feed.querySelector('[style*="Loading"]')) {
+            feed.insertBefore(div, feed.firstChild);
+        } else {
+            feed.innerHTML = '';
+            feed.appendChild(div);
+        }
 
         document.getElementById('boardName').value = '';
         document.getElementById('boardCountry').value = '';
         document.getElementById('boardMsg').value = '';
 
+        showToast('✅ Message posted! Saved permanently.');
+
         postBtn.innerHTML = '📤 Post Message';
         postBtn.disabled = false;
     }
 
-    // Load messages on page load
+    // ===== INIT =====
     window.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         document.getElementById('feedDateBadge').textContent = '📅 ' + now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
         loadGigs();
         loadMessages();
     });
-
 
     // ===== WELCOME POPUP =====
     function closeWelcome() {
@@ -722,7 +755,6 @@
             }
         }, 1000);
     });
-
 </script>
 
 <!-- WELCOME POPUP -->
@@ -731,38 +763,24 @@
         <div class="welcome-logo">🤖</div>
         <h2>Welcome to Mind Vault Global! 🇵🇰</h2>
         <p>Pakistan's AI Hub & Freelance Marketplace — 100% Free!</p>
-        
         <div class="welcome-steps">
             <div class="welcome-step">
                 <div class="welcome-step-icon">💬</div>
-                <div class="welcome-step-text">
-                    <strong>Free AI Chat</strong>
-                    Ask anything — business ideas, project help, career advice. No signup needed!
-                </div>
+                <div class="welcome-step-text"><strong>Free AI Chat</strong>Ask anything — business ideas, project help, career advice. No signup needed!</div>
             </div>
             <div class="welcome-step">
                 <div class="welcome-step-icon">💼</div>
-                <div class="welcome-step-text">
-                    <strong>Post Your Gig — Zero Commission</strong>
-                    List your skills and connect directly with global clients. Keep 100% of earnings!
-                </div>
+                <div class="welcome-step-text"><strong>Post Your Gig — Zero Commission</strong>List your skills and connect directly with global clients. Keep 100% of earnings!</div>
             </div>
             <div class="welcome-step">
                 <div class="welcome-step-icon">📰</div>
-                <div class="welcome-step-text">
-                    <strong>Daily Innovation Feed</strong>
-                    Get fresh business tips, AI trends and market opportunities every day!
-                </div>
+                <div class="welcome-step-text"><strong>Daily Innovation Feed</strong>Get fresh business tips, AI trends and market opportunities every day!</div>
             </div>
             <div class="welcome-step">
                 <div class="welcome-step-icon">📢</div>
-                <div class="welcome-step-text">
-                    <strong>Community Board</strong>
-                    Connect with Pakistani entrepreneurs and global business people!
-                </div>
+                <div class="welcome-step-text"><strong>Community Board</strong>Connect with Pakistani entrepreneurs and global business people!</div>
             </div>
         </div>
-        
         <button class="welcome-start-btn" onclick="closeWelcome()">🚀 Start Exploring — It's Free!</button>
         <span class="welcome-skip" onclick="closeWelcome()">Skip for now</span>
     </div>
