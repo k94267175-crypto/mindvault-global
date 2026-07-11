@@ -115,6 +115,19 @@
         .faq-answer { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
         .faq-item.open .faq-answer { max-height:400px; }
         .faq-answer-inner { padding:0 20px 18px; font-size:13px; color:var(--text-muted); line-height:1.7; }
+        .testi-card { border-top:5px solid #00b894; grid-column:1/-1; }
+        .testi-form-row { background:#f0fff9; border-radius:12px; padding:20px; margin-bottom:20px; }
+        .testi-form-row input, .testi-form-row textarea { width:100%; padding:10px; margin-bottom:10px; border:2px solid #d0f0e5; border-radius:8px; font-family:'Exo 2',sans-serif; font-size:13px; outline:none; }
+        .testi-stars { display:flex; gap:6px; margin-bottom:10px; }
+        .testi-star { font-size:26px; cursor:pointer; color:#ddd; transition:color 0.15s; }
+        .testi-star.active { color:#fdbb2d; }
+        .testi-submit-btn { padding:10px 24px; background:linear-gradient(135deg,#00b894,#00cec9); color:white; border:none; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; font-family:'Exo 2',sans-serif; width:auto; }
+        .testi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+        .testi-item { background:white; border-radius:14px; padding:18px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border:1px solid #e8f8f2; }
+        .testi-item-stars { color:#fdbb2d; font-size:14px; margin-bottom:8px; }
+        .testi-item-text { font-size:13px; color:var(--text-main); line-height:1.6; margin-bottom:10px; }
+        .testi-item-name { font-size:12px; font-weight:800; color:var(--main-blue); }
+        .testi-empty { text-align:center; padding:30px; color:var(--text-muted); grid-column:1/-1; }
         .market-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
         .market-tab { padding:8px 18px; border-radius:20px; border:2px solid #00cec9; background:transparent; color:#00cec9; font-weight:700; font-size:12px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; width:auto; }
         .market-tab.active,.market-tab:hover { background:#00cec9; color:white; }
@@ -173,6 +186,7 @@
     <a href="#feed">Daily Feed</a>
     <a href="#blog">Blog</a>
     <a href="#faq">FAQ</a>
+    <a href="#testimonials">Testimonials</a>
     <a href="#marketplace">Gig Market</a>
     <a href="#vault">Project Vault</a>
     <a href="#board">Community Board</a>
@@ -445,6 +459,29 @@ The first 3 clients are the hardest — after that, referrals and portfolio piec
         </div>
     </div>
 
+    <!-- TESTIMONIALS -->
+    <div class="card testi-card" id="testimonials">
+        <h2>⭐ What Our Users Say</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:5px;">Real feedback from freelancers and clients using Mind Vault Global</p>
+
+        <div class="testi-form-row">
+            <input type="text" id="testiName" placeholder="Your Name *">
+            <div class="testi-stars" id="testiStars">
+                <span class="testi-star" data-val="1">★</span>
+                <span class="testi-star" data-val="2">★</span>
+                <span class="testi-star" data-val="3">★</span>
+                <span class="testi-star" data-val="4">★</span>
+                <span class="testi-star" data-val="5">★</span>
+            </div>
+            <textarea id="testiMsg" rows="3" placeholder="Share your experience... *"></textarea>
+            <button class="testi-submit-btn" onclick="submitTestimonial()" id="testiSubmitBtn">⭐ Submit Feedback</button>
+        </div>
+
+        <div class="testi-grid" id="testiGrid">
+            <div class="testi-empty">💬 Loading testimonials...</div>
+        </div>
+    </div>
+
     <!-- ABOUT US -->
     <div class="card" id="about" style="grid-column:1/-1;background:linear-gradient(135deg,#0d1a4a,#1a2a6c);color:white;">
         <h2 style="color:var(--gold);">🌍 About Mind Vault Global</h2>
@@ -660,6 +697,79 @@ The first 3 clients are the hardest — after that, referrals and portfolio piec
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Sheet1';
     let allGigs = [];
     let currentFilter = 'All';
+
+    // ===== TESTIMONIALS =====
+    const TESTI_SCRIPT_URL = 'PASTE_TESTIMONIALS_SCRIPT_URL_HERE';
+    const TESTI_SHEET_ID = 'PASTE_TESTIMONIALS_SHEET_ID_HERE';
+    const TESTI_SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + TESTI_SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Sheet1';
+    let selectedStars = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.testi-star').forEach(star => {
+            star.addEventListener('click', () => {
+                selectedStars = parseInt(star.dataset.val);
+                document.querySelectorAll('.testi-star').forEach(s => {
+                    s.classList.toggle('active', parseInt(s.dataset.val) <= selectedStars);
+                });
+            });
+        });
+        loadTestimonials();
+    });
+
+    async function submitTestimonial() {
+        const name = document.getElementById('testiName').value.trim();
+        const msg = document.getElementById('testiMsg').value.trim();
+        if (!name || !msg || selectedStars === 0) {
+            showToast('⚠️ Please add your name, a star rating, and your feedback!', true);
+            return;
+        }
+        const btn = document.getElementById('testiSubmitBtn');
+        btn.innerHTML = '<span class="spinner"></span>Sending...';
+        btn.disabled = true;
+        try {
+            await fetch(TESTI_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, stars: selectedStars, msg })
+            });
+        } catch(e) {}
+        showToast('✅ Thank you! Your feedback was submitted.');
+        document.getElementById('testiName').value = '';
+        document.getElementById('testiMsg').value = '';
+        selectedStars = 0;
+        document.querySelectorAll('.testi-star').forEach(s => s.classList.remove('active'));
+        btn.innerHTML = '⭐ Submit Feedback';
+        btn.disabled = false;
+        setTimeout(loadTestimonials, 1500);
+    }
+
+    async function loadTestimonials() {
+        const grid = document.getElementById('testiGrid');
+        try {
+            const res = await fetch(TESTI_SHEET_URL + '&t=' + Date.now());
+            const text = await res.text();
+            const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+            const rows = json.table?.rows;
+            if (!rows || rows.length === 0) { showEmptyTestimonials(); return; }
+            grid.innerHTML = '';
+            [...rows].reverse().forEach(row => {
+                if (!row.c[2]?.v) return;
+                const name = row.c[0]?.v || 'Anonymous';
+                const stars = parseInt(row.c[1]?.v) || 5;
+                const msg = row.c[2]?.v || '';
+                const div = document.createElement('div');
+                div.className = 'testi-item';
+                div.innerHTML = '<div class="testi-item-stars">' + '★'.repeat(stars) + '☆'.repeat(5-stars) + '</div><div class="testi-item-text">' + escapeHtml(msg) + '</div><div class="testi-item-name">— ' + escapeHtml(name) + '</div>';
+                grid.appendChild(div);
+            });
+        } catch(e) { showEmptyTestimonials(); }
+    }
+
+    function showEmptyTestimonials() {
+        document.getElementById('testiGrid').innerHTML = '<div class="testi-empty">💬 No testimonials yet — be the first to share your experience!</div>';
+    }
+
 
     async function loadGigs() {
         try {
