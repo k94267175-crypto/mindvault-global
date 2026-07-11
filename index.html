@@ -313,81 +313,19 @@
 
     <!-- BLOG / ARTICLES -->
     <div class="card blog-card" id="blog">
-        <h2>📝 Freelancing & Business Blog</h2>
-        <p style="font-size:13px;color:var(--text-muted);margin-bottom:5px;">Tips, guides and stories for Pakistani freelancers and entrepreneurs</p>
-        <div class="blog-grid">
-
-            <div class="blog-post" onclick="this.classList.toggle('expanded')">
-                <div class="blog-post-tag">💰 Payments</div>
-                <div class="blog-post-title">How to Receive International Payments in Pakistan Without PayPal</div>
-                <div class="blog-post-excerpt">PayPal isn't available in Pakistan, but that doesn't mean you can't get paid by global clients. Here's how thousands of Pakistani freelancers do it...</div>
-                <div class="blog-post-full">PayPal isn't officially supported in Pakistan for receiving money, which frustrates many new freelancers. The good news: there are reliable alternatives.
-
-Payoneer is the most popular option. It gives you a free US, UK, or EU bank account number that you can share with international clients or platforms (like Medium, Upwork alternatives, or direct clients). Money lands in your Payoneer balance and you withdraw it directly to your Pakistani bank account in PKR, or load it onto a Payoneer Mastercard.
-
-JazzCash and EasyPaisa also now support some international remittance services for freelancers, which can be faster for smaller amounts.
-
-Bank wire transfer is another option for larger one-time payments, though it usually involves higher fees.
-
-Whichever method you choose, always confirm with your client which payment options they support before starting a project, and test with a small amount first.</div>
-                <span class="blog-read-more">Click to read more ▾</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:5px;">
+            <div>
+                <h2>📝 Freelancing & Business Blog</h2>
+                <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">Tips, guides and stories for Pakistani freelancers and entrepreneurs</p>
             </div>
-
-            <div class="blog-post" onclick="this.classList.toggle('expanded')">
-                <div class="blog-post-tag">💼 Freelancing</div>
-                <div class="blog-post-title">5 In-Demand Skills Pakistani Freelancers Should Learn in 2026</div>
-                <div class="blog-post-excerpt">The freelance market is evolving fast. Here are the skills currently getting the most gigs and highest rates for Pakistani freelancers...</div>
-                <div class="blog-post-full">1. AI Prompt Engineering & AI Tool Integration — Businesses need people who can use AI tools (chatbots, content generation, automation) effectively, not just use ChatGPT casually.
-
-2. Short-form Video Editing — With the explosion of Reels, TikTok and YouTube Shorts, editors who can turn long content into punchy short clips are in huge demand.
-
-3. No-Code Website & App Building — Tools like Webflow, Framer and Bubble let you build client websites fast without deep coding knowledge.
-
-4. Technical Writing & Documentation — SaaS companies constantly need clear documentation, and this pays well with less competition than general content writing.
-
-5. Data Entry with Specialization — Plain data entry is low-paying, but specialized data entry (medical, legal, e-commerce catalog management) commands much higher rates.
-
-Pick one skill, build a small portfolio around it, and start pitching — specialization beats being a generalist in today's freelance market.</div>
-                <span class="blog-read-more">Click to read more ▾</span>
-            </div>
-
-            <div class="blog-post" onclick="this.classList.toggle('expanded')">
-                <div class="blog-post-tag">🚀 Getting Started</div>
-                <div class="blog-post-title">Zero Commission Freelancing: What It Really Means</div>
-                <div class="blog-post-excerpt">Most freelance platforms take 10-20% of your earnings. Here's how "zero commission" platforms work differently, and what to watch out for...</div>
-                <div class="blog-post-full">Traditional platforms like Fiverr and Upwork charge freelancers a commission on every project, sometimes as high as 20% on your first earnings with a client.
-
-Zero commission platforms instead let freelancers and clients connect directly and negotiate payment between themselves, without the platform taking a cut. This means you keep 100% of what you earn.
-
-The tradeoff: fewer built-in protections like escrow or dispute resolution, since the platform isn't holding the money. This means it's important to:
-- Get a deposit upfront for larger projects
-- Communicate clearly and get agreements in writing (even a simple chat message confirming scope and price)
-- Build your reputation gradually with smaller projects before taking bigger ones
-
-Zero commission works best when combined with good communication habits and a bit of caution with new clients.</div>
-                <span class="blog-read-more">Click to read more ▾</span>
-            </div>
-
-            <div class="blog-post" onclick="this.classList.toggle('expanded')">
-                <div class="blog-post-tag">📈 Growth</div>
-                <div class="blog-post-title">How to Get Your First 3 Clients as a New Freelancer</div>
-                <div class="blog-post-excerpt">Starting from zero reviews and zero portfolio feels impossible. Here's a practical approach that actually works for beginners in Pakistan...</div>
-                <div class="blog-post-full">1. Do 2-3 projects for free or at a steep discount for people you know (a relative's shop, a friend's small business) purely to build a real portfolio piece — not a mockup.
-
-2. Join Pakistani Facebook groups and WhatsApp communities related to your skill (writing, design, marketing) and genuinely help people with small questions before pitching your services.
-
-3. Post your gig on multiple free marketplaces (like this one) rather than just one — more visibility means more chances of being found.
-
-4. Ask every client, even small ones, for a short written testimonial or a WhatsApp screenshot of positive feedback you can share publicly.
-
-5. Be specific in your outreach. "I do graphic design" gets ignored. "I design Instagram post templates for small clothing brands" gets replies.
-
-The first 3 clients are the hardest — after that, referrals and portfolio pieces start doing the work for you.</div>
-                <span class="blog-read-more">Click to read more ▾</span>
-            </div>
-
+            <button class="generate-feed-btn" onclick="generateBlogPost()" id="blogGenBtn">✨ Generate New Article</button>
+        </div>
+        <div class="feed-loading" id="blogLoading"><span class="spinner" style="border-color:rgba(225,112,85,0.3);border-top-color:#e17055;"></span> Writing article...</div>
+        <div class="blog-grid" id="blogGrid">
+            <div class="testi-empty">📝 Loading articles...</div>
         </div>
     </div>
+
 
     <!-- GIG MARKETPLACE -->
     <div class="card marketplace-card" id="marketplace">
@@ -701,7 +639,7 @@ The first 3 clients are the hardest — after that, referrals and portfolio piec
     // ===== TESTIMONIALS =====
     const TESTI_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0NdTDhR9k5AENKICXiaIgd4TBtC9dq3tedqlp-DDVFkNqnnrfrt--VGOBOO4KI2CN-w/exec';
     const TESTI_SHEET_ID = '1uKflSFxI7Zp6AYIzwOFGzJKOQNiHHDwwGIFzIcUUdcM';
-    const TESTI_SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + TESTI_SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Testimonials';
+    const TESTI_SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + TESTI_SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Testimonials&headers=1';
     let selectedStars = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -769,6 +707,79 @@ The first 3 clients are the hardest — after that, referrals and portfolio piec
     function showEmptyTestimonials() {
         document.getElementById('testiGrid').innerHTML = '<div class="testi-empty">💬 No testimonials yet — be the first to share your experience!</div>';
     }
+
+    // ===== BLOG =====
+    const BLOG_SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + TESTI_SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Blog&headers=1';
+    const blogTopics = [
+        'How Pakistani freelancers can price their services for international clients',
+        'Common mistakes new freelancers make when starting out',
+        'How to write a winning gig description that gets clients',
+        'Building a personal brand as a freelancer in Pakistan',
+        'How to handle difficult clients professionally',
+        'Time management tips for freelancers juggling multiple projects',
+        'The pros and cons of specializing vs being a generalist freelancer',
+        'How to negotiate rates with international clients'
+    ];
+
+    async function generateBlogPost() {
+        const btn = document.getElementById('blogGenBtn');
+        const loading = document.getElementById('blogLoading');
+        btn.disabled = true;
+        loading.classList.add('visible');
+        const topic = blogTopics[Math.floor(Math.random() * blogTopics.length)];
+        try {
+            const raw = await callAI(
+                [{ role: 'user', content: 'Write a blog article about: ' + topic }],
+                'You are a content writer for Mind Vault Global, a Pakistani freelance marketplace blog. Write one practical, specific blog article (300-400 words) for Pakistani freelancers/entrepreneurs on the given topic. Respond ONLY with valid JSON: {"category":"short 1-3 word category","title":"engaging title","content":"full article with paragraph breaks using \\n\\n"}. No markdown, no backticks.'
+            );
+            let post;
+            try { post = JSON.parse(raw.replace(/```json|```/g,'').trim()); } catch(e) { post = null; }
+            if (post && post.title && post.content) {
+                await fetch(GIGS_SCRIPT_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'blog', category: post.category || 'Tips', title: post.title, content: post.content })
+                });
+                showToast('✅ New article published!');
+                setTimeout(loadBlogPosts, 1500);
+            } else {
+                showToast('⚠️ Could not generate article. Try again.', true);
+            }
+        } catch(e) {
+            showToast('⚠️ Connection error. Try again.', true);
+        }
+        loading.classList.remove('visible');
+        btn.disabled = false;
+    }
+
+    async function loadBlogPosts() {
+        const grid = document.getElementById('blogGrid');
+        try {
+            const res = await fetch(BLOG_SHEET_URL + '&t=' + Date.now());
+            const text = await res.text();
+            const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+            const rows = json.table?.rows;
+            if (!rows || rows.length === 0) { showEmptyBlog(); return; }
+            grid.innerHTML = '';
+            [...rows].reverse().forEach(row => {
+                if (!row.c[1]?.v) return;
+                const category = row.c[0]?.v || 'Tips';
+                const title = row.c[1]?.v || '';
+                const content = row.c[2]?.v || '';
+                const excerpt = content.length > 140 ? content.substring(0,140) + '...' : content;
+                const div = document.createElement('div');
+                div.className = 'blog-post';
+                div.onclick = function(){ this.classList.toggle('expanded'); };
+                div.innerHTML = '<div class="blog-post-tag">📌 ' + escapeHtml(category) + '</div><div class="blog-post-title">' + escapeHtml(title) + '</div><div class="blog-post-excerpt">' + escapeHtml(excerpt) + '</div><div class="blog-post-full">' + escapeHtml(content) + '</div><span class="blog-read-more">Click to read more ▾</span>';
+                grid.appendChild(div);
+            });
+        } catch(e) { showEmptyBlog(); }
+    }
+
+    function showEmptyBlog() {
+        document.getElementById('blogGrid').innerHTML = '<div class="testi-empty">📝 No articles yet — click "Generate New Article" to publish the first one!</div>';
+    }
+
 
 
     async function loadGigs() {
@@ -986,6 +997,7 @@ The first 3 clients are the hardest — after that, referrals and portfolio piec
         document.getElementById('feedDateBadge').textContent = '📅 ' + now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
         loadGigs();
         loadMessages();
+        loadBlogPosts();
     });
 
     // ===== WELCOME POPUP =====
