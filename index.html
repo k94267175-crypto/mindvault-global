@@ -699,9 +699,9 @@ The first 3 clients are the hardest — after that, referrals and portfolio piec
     let currentFilter = 'All';
 
     // ===== TESTIMONIALS =====
-    const TESTI_SCRIPT_URL = 'PASTE_TESTIMONIALS_SCRIPT_URL_HERE';
-    const TESTI_SHEET_ID = 'PASTE_TESTIMONIALS_SHEET_ID_HERE';
-    const TESTI_SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + TESTI_SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Sheet1';
+    const TESTI_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0NdTDhR9k5AENKICXiaIgd4TBtC9dq3tedqlp-DDVFkNqnnrfrt--VGOBOO4KI2CN-w/exec';
+    const TESTI_SHEET_ID = '1uKflSFxI7Zp6AYIzwOFGzJKOQNiHHDwwGIFzIcUUdcM';
+    const TESTI_SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + TESTI_SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Testimonials';
     let selectedStars = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -731,7 +731,7 @@ The first 3 clients are the hardest — after that, referrals and portfolio piec
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, stars: selectedStars, msg })
+                body: JSON.stringify({ type: 'testimonial', name, stars: selectedStars, msg })
             });
         } catch(e) {}
         showToast('✅ Thank you! Your feedback was submitted.');
