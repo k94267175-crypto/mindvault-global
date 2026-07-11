@@ -107,6 +107,14 @@
         .blog-post.expanded .blog-post-full { display:block; }
         .blog-post.expanded .blog-post-excerpt { display:none; }
         .blog-read-more { font-size:12px; color:#e17055; font-weight:700; margin-top:10px; display:inline-block; }
+        .faq-card { border-top:5px solid var(--ai-purple); grid-column:1/-1; }
+        .faq-item { background:#f8f7ff; border-radius:12px; margin-bottom:12px; overflow:hidden; border:1px solid #e8e4ff; }
+        .faq-question { padding:16px 20px; font-weight:700; font-size:14px; color:var(--main-blue); cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+        .faq-arrow { transition:transform 0.2s; color:var(--ai-purple); font-size:18px; }
+        .faq-item.open .faq-arrow { transform:rotate(180deg); }
+        .faq-answer { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
+        .faq-item.open .faq-answer { max-height:400px; }
+        .faq-answer-inner { padding:0 20px 18px; font-size:13px; color:var(--text-muted); line-height:1.7; }
         .market-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
         .market-tab { padding:8px 18px; border-radius:20px; border:2px solid #00cec9; background:transparent; color:#00cec9; font-weight:700; font-size:12px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; width:auto; }
         .market-tab.active,.market-tab:hover { background:#00cec9; color:white; }
@@ -164,6 +172,7 @@
     <a href="#ai-lab">AI Lab</a>
     <a href="#feed">Daily Feed</a>
     <a href="#blog">Blog</a>
+    <a href="#faq">FAQ</a>
     <a href="#marketplace">Gig Market</a>
     <a href="#vault">Project Vault</a>
     <a href="#board">Community Board</a>
@@ -386,6 +395,43 @@ The first 3 clients are the hardest — after that, referrals and portfolio piec
             <button class="market-tab" onclick="filterGigs(this,'AI Services')">🤖 AI Services</button>
         </div>
         <div class="gig-grid" id="gigGrid"><div style="text-align:center;padding:30px;color:#00cec9;font-weight:600;grid-column:1/-1;">Loading gigs... ⏳</div></div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card faq-card" id="faq">
+        <h2>❓ Frequently Asked Questions</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Common questions from Pakistani freelancers and clients</p>
+
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-question">Is Mind Vault Global really zero commission?<span class="faq-arrow">▾</span></div>
+            <div class="faq-answer"><div class="faq-answer-inner">Yes. Unlike Fiverr or Upwork which take 10-20% of your earnings, we don't take any cut. Freelancers and clients negotiate and pay each other directly, so you keep 100% of what you earn.</div></div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-question">How do I receive payment from a client if I don't have PayPal?<span class="faq-arrow">▾</span></div>
+            <div class="faq-answer"><div class="faq-answer-inner">Most freelancers here use Payoneer, JazzCash, EasyPaisa, or direct bank transfer. Check our Payments section below and our Blog for a full guide on setting up Payoneer for international clients.</div></div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-question">Do I need experience to post a gig here?<span class="faq-arrow">▾</span></div>
+            <div class="faq-answer"><div class="faq-answer-inner">No formal experience is required, but having at least 1-2 sample pieces of work (even done for free for a friend or relative) will help clients trust you enough to hire you.</div></div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-question">Is my personal information safe when I post a gig or message?<span class="faq-arrow">▾</span></div>
+            <div class="faq-answer"><div class="faq-answer-inner">Only share contact details you're comfortable making public (like a WhatsApp number or email dedicated to freelance work), since gig posts and community messages are visible to all visitors. See our Privacy Policy for full details.</div></div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-question">What categories of freelance work can I find or offer here?<span class="faq-arrow">▾</span></div>
+            <div class="faq-answer"><div class="faq-answer-inner">Web Development, Graphic Design, Content Writing, Digital Marketing, Video Editing, Data Entry, AI Services, and more under "Other". Check the Gig Marketplace section to browse or post.</div></div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-question">How is this different from Fiverr or Upwork?<span class="faq-arrow">▾</span></div>
+            <div class="faq-answer"><div class="faq-answer-inner">Those platforms charge commission and often require a long profile-building period before you get noticed. Here, listings are simple and direct, with no fees, though this also means fewer built-in dispute protections — so use clear communication and, for bigger projects, ask for an upfront deposit.</div></div>
+        </div>
+
     </div>
 
     <!-- PAYMENTS -->
