@@ -107,6 +107,7 @@
         .blog-post.expanded .blog-post-full { display:block; }
         .blog-post.expanded .blog-post-excerpt { display:none; }
         .blog-read-more { font-size:12px; color:#e17055; font-weight:700; margin-top:10px; display:inline-block; }
+        .blog-post-banner { width:100%; height:110px; border-radius:10px; margin-bottom:14px; display:flex; align-items:center; justify-content:center; font-size:44px; }
         .faq-card { border-top:5px solid var(--ai-purple); grid-column:1/-1; }
         .faq-item { background:#f8f7ff; border-radius:12px; margin-bottom:12px; overflow:hidden; border:1px solid #e8e4ff; }
         .faq-question { padding:16px 20px; font-weight:700; font-size:14px; color:var(--main-blue); cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
@@ -752,6 +753,20 @@
         btn.disabled = false;
     }
 
+    const blogBanners = {
+        'Payments': { emoji: '💰', gradient: 'linear-gradient(135deg,#00b894,#00cec9)' },
+        'Freelancing': { emoji: '💼', gradient: 'linear-gradient(135deg,#6c5ce7,#a29bfe)' },
+        'Tips': { emoji: '💡', gradient: 'linear-gradient(135deg,#fdbb2d,#e0a020)' },
+        'Growth': { emoji: '📈', gradient: 'linear-gradient(135deg,#e17055,#fdbb2d)' },
+        'Pricing': { emoji: '💵', gradient: 'linear-gradient(135deg,#00cec9,#0984e3)' },
+        'Clients': { emoji: '🤝', gradient: 'linear-gradient(135deg,#fd79a8,#e17055)' },
+        'Branding': { emoji: '🎯', gradient: 'linear-gradient(135deg,#1a2a6c,#6c5ce7)' }
+    };
+    function getBlogBanner(category) {
+        const key = Object.keys(blogBanners).find(k => category.toLowerCase().includes(k.toLowerCase()));
+        return blogBanners[key] || { emoji: '📝', gradient: 'linear-gradient(135deg,#0d1a4a,#2a48ad)' };
+    }
+
     async function loadBlogPosts() {
         const grid = document.getElementById('blogGrid');
         try {
@@ -767,10 +782,11 @@
                 const title = row.c[1]?.v || '';
                 const content = row.c[2]?.v || '';
                 const excerpt = content.length > 140 ? content.substring(0,140) + '...' : content;
+                const banner = getBlogBanner(category);
                 const div = document.createElement('div');
                 div.className = 'blog-post';
                 div.onclick = function(){ this.classList.toggle('expanded'); };
-                div.innerHTML = '<div class="blog-post-tag">📌 ' + escapeHtml(category) + '</div><div class="blog-post-title">' + escapeHtml(title) + '</div><div class="blog-post-excerpt">' + escapeHtml(excerpt) + '</div><div class="blog-post-full">' + escapeHtml(content) + '</div><span class="blog-read-more">Click to read more ▾</span>';
+                div.innerHTML = '<div class="blog-post-banner" style="background:' + banner.gradient + '">' + banner.emoji + '</div><div class="blog-post-tag">📌 ' + escapeHtml(category) + '</div><div class="blog-post-title">' + escapeHtml(title) + '</div><div class="blog-post-excerpt">' + escapeHtml(excerpt) + '</div><div class="blog-post-full">' + escapeHtml(content) + '</div><span class="blog-read-more">Click to read more ▾</span>';
                 grid.appendChild(div);
             });
         } catch(e) { showEmptyBlog(); }
