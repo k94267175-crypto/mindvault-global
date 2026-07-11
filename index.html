@@ -96,6 +96,17 @@
         .feed-loading { display:none; text-align:center; padding:30px; color:var(--ai-purple); font-weight:600; font-size:14px; }
         .feed-loading.visible { display:block; }
         .marketplace-card { border-top:5px solid #00cec9; grid-column:1/-1; }
+        .blog-card { border-top:5px solid #e17055; grid-column:1/-1; }
+        .blog-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; margin-top:18px; }
+        .blog-post { background:linear-gradient(135deg,#fff8f6,#fff0ec); border-radius:14px; padding:22px; border-left:4px solid #e17055; cursor:pointer; transition:transform 0.2s; }
+        .blog-post:hover { transform:translateY(-3px); }
+        .blog-post-tag { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:#e17055; margin-bottom:8px; }
+        .blog-post-title { font-size:16px; font-weight:800; color:var(--main-blue); margin-bottom:10px; line-height:1.4; }
+        .blog-post-excerpt { font-size:13px; color:var(--text-muted); line-height:1.6; }
+        .blog-post-full { display:none; font-size:13px; color:var(--text-main); line-height:1.8; margin-top:12px; white-space:pre-line; }
+        .blog-post.expanded .blog-post-full { display:block; }
+        .blog-post.expanded .blog-post-excerpt { display:none; }
+        .blog-read-more { font-size:12px; color:#e17055; font-weight:700; margin-top:10px; display:inline-block; }
         .market-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
         .market-tab { padding:8px 18px; border-radius:20px; border:2px solid #00cec9; background:transparent; color:#00cec9; font-weight:700; font-size:12px; cursor:pointer; font-family:'Exo 2',sans-serif; transition:all 0.2s; width:auto; }
         .market-tab.active,.market-tab:hover { background:#00cec9; color:white; }
@@ -152,6 +163,7 @@
     <a href="#about">About</a>
     <a href="#ai-lab">AI Lab</a>
     <a href="#feed">Daily Feed</a>
+    <a href="#blog">Blog</a>
     <a href="#marketplace">Gig Market</a>
     <a href="#vault">Project Vault</a>
     <a href="#board">Community Board</a>
@@ -273,6 +285,84 @@
         <div class="feed-loading" id="feedLoading"><span class="spinner" style="border-color:rgba(108,92,231,0.3);border-top-color:var(--ai-purple);"></span> Generating...</div>
         <div class="feed-grid" id="feedGrid">
             <div class="feed-empty"><span class="big-icon">📰</span><strong>No content yet</strong><br>Select a category and click Generate</div>
+        </div>
+    </div>
+
+    <!-- BLOG / ARTICLES -->
+    <div class="card blog-card" id="blog">
+        <h2>📝 Freelancing & Business Blog</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:5px;">Tips, guides and stories for Pakistani freelancers and entrepreneurs</p>
+        <div class="blog-grid">
+
+            <div class="blog-post" onclick="this.classList.toggle('expanded')">
+                <div class="blog-post-tag">💰 Payments</div>
+                <div class="blog-post-title">How to Receive International Payments in Pakistan Without PayPal</div>
+                <div class="blog-post-excerpt">PayPal isn't available in Pakistan, but that doesn't mean you can't get paid by global clients. Here's how thousands of Pakistani freelancers do it...</div>
+                <div class="blog-post-full">PayPal isn't officially supported in Pakistan for receiving money, which frustrates many new freelancers. The good news: there are reliable alternatives.
+
+Payoneer is the most popular option. It gives you a free US, UK, or EU bank account number that you can share with international clients or platforms (like Medium, Upwork alternatives, or direct clients). Money lands in your Payoneer balance and you withdraw it directly to your Pakistani bank account in PKR, or load it onto a Payoneer Mastercard.
+
+JazzCash and EasyPaisa also now support some international remittance services for freelancers, which can be faster for smaller amounts.
+
+Bank wire transfer is another option for larger one-time payments, though it usually involves higher fees.
+
+Whichever method you choose, always confirm with your client which payment options they support before starting a project, and test with a small amount first.</div>
+                <span class="blog-read-more">Click to read more ▾</span>
+            </div>
+
+            <div class="blog-post" onclick="this.classList.toggle('expanded')">
+                <div class="blog-post-tag">💼 Freelancing</div>
+                <div class="blog-post-title">5 In-Demand Skills Pakistani Freelancers Should Learn in 2026</div>
+                <div class="blog-post-excerpt">The freelance market is evolving fast. Here are the skills currently getting the most gigs and highest rates for Pakistani freelancers...</div>
+                <div class="blog-post-full">1. AI Prompt Engineering & AI Tool Integration — Businesses need people who can use AI tools (chatbots, content generation, automation) effectively, not just use ChatGPT casually.
+
+2. Short-form Video Editing — With the explosion of Reels, TikTok and YouTube Shorts, editors who can turn long content into punchy short clips are in huge demand.
+
+3. No-Code Website & App Building — Tools like Webflow, Framer and Bubble let you build client websites fast without deep coding knowledge.
+
+4. Technical Writing & Documentation — SaaS companies constantly need clear documentation, and this pays well with less competition than general content writing.
+
+5. Data Entry with Specialization — Plain data entry is low-paying, but specialized data entry (medical, legal, e-commerce catalog management) commands much higher rates.
+
+Pick one skill, build a small portfolio around it, and start pitching — specialization beats being a generalist in today's freelance market.</div>
+                <span class="blog-read-more">Click to read more ▾</span>
+            </div>
+
+            <div class="blog-post" onclick="this.classList.toggle('expanded')">
+                <div class="blog-post-tag">🚀 Getting Started</div>
+                <div class="blog-post-title">Zero Commission Freelancing: What It Really Means</div>
+                <div class="blog-post-excerpt">Most freelance platforms take 10-20% of your earnings. Here's how "zero commission" platforms work differently, and what to watch out for...</div>
+                <div class="blog-post-full">Traditional platforms like Fiverr and Upwork charge freelancers a commission on every project, sometimes as high as 20% on your first earnings with a client.
+
+Zero commission platforms instead let freelancers and clients connect directly and negotiate payment between themselves, without the platform taking a cut. This means you keep 100% of what you earn.
+
+The tradeoff: fewer built-in protections like escrow or dispute resolution, since the platform isn't holding the money. This means it's important to:
+- Get a deposit upfront for larger projects
+- Communicate clearly and get agreements in writing (even a simple chat message confirming scope and price)
+- Build your reputation gradually with smaller projects before taking bigger ones
+
+Zero commission works best when combined with good communication habits and a bit of caution with new clients.</div>
+                <span class="blog-read-more">Click to read more ▾</span>
+            </div>
+
+            <div class="blog-post" onclick="this.classList.toggle('expanded')">
+                <div class="blog-post-tag">📈 Growth</div>
+                <div class="blog-post-title">How to Get Your First 3 Clients as a New Freelancer</div>
+                <div class="blog-post-excerpt">Starting from zero reviews and zero portfolio feels impossible. Here's a practical approach that actually works for beginners in Pakistan...</div>
+                <div class="blog-post-full">1. Do 2-3 projects for free or at a steep discount for people you know (a relative's shop, a friend's small business) purely to build a real portfolio piece — not a mockup.
+
+2. Join Pakistani Facebook groups and WhatsApp communities related to your skill (writing, design, marketing) and genuinely help people with small questions before pitching your services.
+
+3. Post your gig on multiple free marketplaces (like this one) rather than just one — more visibility means more chances of being found.
+
+4. Ask every client, even small ones, for a short written testimonial or a WhatsApp screenshot of positive feedback you can share publicly.
+
+5. Be specific in your outreach. "I do graphic design" gets ignored. "I design Instagram post templates for small clothing brands" gets replies.
+
+The first 3 clients are the hardest — after that, referrals and portfolio pieces start doing the work for you.</div>
+                <span class="blog-read-more">Click to read more ▾</span>
+            </div>
+
         </div>
     </div>
 
